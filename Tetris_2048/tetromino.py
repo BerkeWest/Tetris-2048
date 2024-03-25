@@ -37,6 +37,34 @@ class Tetromino:
          occupied_tiles.append((1, 1))
          occupied_tiles.append((1, 2))
          occupied_tiles.append((2, 2))
+      elif type == 'S':
+         n = 3  # n = number of rows = number of columns in the tile matrix
+         # shape of the tetromino Z in its initial orientation
+         occupied_tiles.append((0, 2)) # (column_index, row_index) 
+         occupied_tiles.append((1, 1))
+         occupied_tiles.append((1, 2))
+         occupied_tiles.append((2, 1))
+      elif type == 'J':
+         n = 3  # n = number of rows = number of columns in the tile matrix
+         # shape of the tetromino Z in its initial orientation
+         occupied_tiles.append((2, 0)) # (column_index, row_index) 
+         occupied_tiles.append((2, 1))
+         occupied_tiles.append((2, 2))
+         occupied_tiles.append((1, 2))
+      elif type == 'L':
+         n = 3  # n = number of rows = number of columns in the tile matrix
+         # shape of the tetromino Z in its initial orientation
+         occupied_tiles.append((0, 0)) # (column_index, row_index) 
+         occupied_tiles.append((0, 1))
+         occupied_tiles.append((0, 2))
+         occupied_tiles.append((1, 2))
+      elif type == 'T':
+         n = 3  # n = number of rows = number of columns in the tile matrix
+         # shape of the tetromino Z in its initial orientation
+         occupied_tiles.append((0, 1)) # (column_index, row_index) 
+         occupied_tiles.append((1, 1))
+         occupied_tiles.append((2, 1))
+         occupied_tiles.append((1, 2))
       # create a matrix of numbered tiles based on the shape of the tetromino
       self.tile_matrix = np.full((n, n), None)
       # create the four tiles (minos) of the tetromino and place these tiles
