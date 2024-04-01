@@ -146,8 +146,8 @@ def display_game_menu(grid_height, grid_width):
             # most recently been left-clicked
             mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
             # check if these coordinates are inside the button
-            if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
-                if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h:
+            if button_blc_x <= mouse_x <= button_blc_x + button_w:
+                if button_blc_y <= mouse_y <= button_blc_y + button_h:
                     break  # break the loop to end the method and start the game
 
 
