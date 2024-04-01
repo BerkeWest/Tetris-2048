@@ -53,10 +53,14 @@ def start():
                 # move the active tetromino down by one
                 # (soft drop: causes the tetromino to fall down faster)
                 current_tetromino.move(key_typed, grid)
-            # if the up key has been passed
-            elif key_typed == "up":
-                # rotate the active tetromino 90 degree on clock cycle
-                current_tetromino.rotate(grid)
+            # if the d key has been passed
+            elif key_typed == "d":
+                # rotate tetromino clockwise by 90deg
+                current_tetromino.rotate(key_typed)
+            # if the a key pressed rotate tetromino counterclockwise by 90deg
+            elif key_typed == "a":
+                # rotate the active tetromino counter-clockwise
+                current_tetromino.rotate(key_typed)
             # if the space key has been pressed
             elif key_typed == "space":
                 # hard drop: causes tetromino to fall down to the bottom
@@ -93,7 +97,7 @@ def start():
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):
     # type (shape) of the tetromino is determined randomly
-    tetromino_types = ['I', 'O', 'Z','S', 'J', 'L', 'T']
+    tetromino_types = ['I', 'O', 'Z', 'S', 'J', 'L', 'T']
     random_index = random.randint(0, len(tetromino_types) - 1)
     random_type = tetromino_types[random_index]
     # create and return the tetromino

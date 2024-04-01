@@ -210,29 +210,29 @@ class Tetromino:
                         break  # end the inner for loop
         return True  # tetromino can be moved in the given direction
 
-    def rotate(self, game_grid):
-        # check whether rotate is valid or not by calling can_rotate function
-        if self.can_rotate(game_grid):
-            # if rotate valid, rotate 90 degree tile_matrix
-            self.tile_matrix = np.rot90(self.tile_matrix, -1)
-            return True
-        return False
+    def rotate(self, direction):
+        if not (self.can_rotate(direction)):
+            return False
+        if direction == "d":
+            self.tile_matrix = np.rot90(self.tile_matrix, 3)
+        elif direction == "a":
+            self.tile_matrix = np.rot90(self.tile_matrix, 1)
+        return True
 
-    # method to check whether rotate is possible or not
-    def can_rotate(self, game_grid):
+    def can_rotate(self, dir):
         n = len(self.tile_matrix)
-        # calculate the rotated matrix
-        rotated_matrix = np.rot90(self.tile_matrix, -1)
-        # after rotation, check collusion for every tile
-        for i in range(n):
-            for j in range(n):
-                if rotated_matrix[i][j] is not None:
-                    # calculate new position of tile in game grid using updated get_cell_position function.
-                    new_position = self.get_cell_position(i, j, rotated=True)
-                    # check whether new position is in the game grid or not
-                    if not game_grid.is_inside(new_position.y, new_position.x):
+        copy_of_tile_matrix = cp.copy(self.tile_matrix)
+        copy_of_tile_matrix = np.rot90(copy_of_tile_matrix, 1)
+
+        for row in range(n):
+            for col in range(n):
+                if dir == "d" and copy_of_tile_matrix[row][col] is not None:
+                    position = self.get_cell_position(row, col)
+                    if position.y < 0 or position.x < 0 or position.x >= self.grid_width:
                         return False
-                    # check is there any tile in new position or not
-                    if game_grid.is_occupied(new_position.y, new_position.x):
+
+                elif dir == "a" and copy_of_tile_matrix[row][col] is not None:
+                    position = self.get_cell_position(row, col)
+                    if position.y < 0 or position.x < 0 or position.x >= self.grid_width:
                         return False
         return True
