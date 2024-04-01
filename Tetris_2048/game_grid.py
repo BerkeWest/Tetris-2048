@@ -98,6 +98,7 @@ class GameGrid:
     def update_grid(self, tiles_to_lock, blc_position):
         # necessary for the display method to stop displaying the tetromino
         self.current_tetromino = None
+
         # lock the tiles of the current tetromino (tiles_to_lock) on the game grid
         n_rows, n_cols = len(tiles_to_lock), len(tiles_to_lock[0])
         for col in range(n_cols):
@@ -105,13 +106,24 @@ class GameGrid:
                 # place each tile onto the game grid
                 if tiles_to_lock[row][col] is not None:
                     # compute the position of the tile on the game grid
-                    pos = Point()
-                    pos.x = blc_position.x + col
-                    pos.y = blc_position.y + (n_rows - 1) - row
-                    if self.is_inside(pos.y, pos.x):
-                        self.tile_matrix[pos.y][pos.x] = tiles_to_lock[row][col]
+                    pos_x = blc_position.x + col
+                    pos_y = blc_position.y + (n_rows - 1) - row
+                    # check if the position is inside the game grid
+                    if self.is_inside(pos_y, pos_x):
+                        self.tile_matrix[pos_y][pos_x] = tiles_to_lock[row][col]
                     # the game is over if any placed tile is above the game grid
                     else:
                         self.game_over = True
-        # return the game_over flag
+                        return self.game_over
+
+        # After locking the tiles, remove the full rows and update the grid
+        self.remove_full_rows_and_shift()
+
         return self.game_over
+
+    def remove_full_rows_and_shift(self):
+        for row in range(self.grid_height):
+            if None not in self.tile_matrix[row]:
+                for shift_row in range(row, self.grid_height - 1):
+                    self.tile_matrix[shift_row] = self.tile_matrix[shift_row + 1]
+                self.tile_matrix[self.grid_height - 1] = [None] * self.grid_width
