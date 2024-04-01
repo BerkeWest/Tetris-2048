@@ -54,7 +54,7 @@ def start():
                 # (soft drop: causes the tetromino to fall down faster)
                 current_tetromino.move(key_typed, grid)
             # if the enter key has been passed
-            elif key_typed == "space":
+            elif key_typed == "up":
                 # rotate the active tetromino 90 degree on clock cycle
                 current_tetromino.rotate(grid)
             # clear the queue of the pressed keys for a smoother interaction
