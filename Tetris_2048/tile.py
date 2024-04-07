@@ -33,7 +33,7 @@ class Tile:
         self.foreground_color = tile_colors[self.number]['foreground_color']
 
     def merge_and_update(self, tile):
-        if self.number == tile.number and self.number < 2048:
+        if self.number == tile.number:
             self.number *= 2
             tile.number = None
             self.update_color()
