@@ -6,152 +6,184 @@ from game_grid import GameGrid  # the class for modeling the game grid
 from tetromino import Tetromino  # the class for modeling the tetrominoes
 import random  # used for creating tetrominoes with random types/shapes
 
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 800
+GRID_HEIGHT = 16
+GRID_WIDTH = 16
+INFO_WIDTH = 8
+BACKGROUND_COLOR = Color(139, 120, 128)
+BUTTON_COLOR = Color(100, 100, 128)
+TEXT_COLOR = Color(31, 160, 239)
+BLACK_COLOR = Color(0, 0, 0)
+WHITE_COLOR = Color(255, 255, 255)
+MENU_IMAGE_PATH = "/images/menu_image.png"
+BUTTON_TEXT = "Click Here to Go Settings Screen"
+SLIDER_X = 280
+SLIDER_Y_WIDTH = 455
+SLIDER_Y_HEIGHT = 405
+SLIDER_RADIUS = 10
+CONTINUE_BUTTON_CENTER = [250, 100]
+CONTINUE_BUTTON_WIDTH = 300
+CONTINUE_BUTTON_HEIGHT = 50
+SLIDER_MIN_X = 130
+SLIDER_MAX_X = 430
+WIDTH_MIN_VALUE = 12
+WIDTH_MAX_VALUE = 24
+HEIGHT_MIN_VALUE = 12
+HEIGHT_MAX_VALUE = 24
+SLIDER_BAR_Y_WIDTH = 450
+SLIDER_BAR_Y_HEIGHT = 400
+SLIDER_BAR_WIDTH = 300
+SLIDER_BAR_HEIGHT = 10
+
 
 # MAIN FUNCTION OF THE PROGRAM
 # -------------------------------------------------------------------------------
-# Main function where this program starts execution
-def start():
-    # set the dimensions of the game grid
-    grid_h, grid_w, info_w = 20, 12, 10
-    # set the size of the drawing canvas
-    canvas_h, canvas_w = 40 * grid_h, 40 * (grid_w + info_w)
-    stddraw.setCanvasSize(canvas_w, canvas_h)
-    # set the scale of the coordinate system
-    stddraw.setXscale(-0.5, grid_w + info_w - 0.5)
-    stddraw.setYscale(-0.5, grid_h - 0.5)
 
-    # set the dimension values stored and used in the Tetromino class
+
+def start():
+    stddraw.setCanvasSize(CANVAS_WIDTH, CANVAS_HEIGHT)
+    stddraw.setXscale(-0.5, GRID_WIDTH)
+    stddraw.setYscale(-0.5, GRID_HEIGHT)
+    display_game_menu(GRID_WIDTH, GRID_HEIGHT + 0.5)
+    grid_h, grid_w = settings_screen()
+    game_w = grid_w + INFO_WIDTH
+    stddraw.setXscale(-0.5, game_w - 0.5)
+    stddraw.setYscale(-0.5, grid_h - 0.5)
     Tetromino.grid_height = grid_h
     Tetromino.grid_width = grid_w
-
-    # create the game grid
-    grid = GameGrid(grid_h, grid_w, info_w)
-    # create the first tetromino to enter the game grid
-    # by using the create_tetromino function defined below
+    grid = GameGrid(grid_h, grid_w, INFO_WIDTH)
     current_tetromino = create_tetromino(grid_h, grid_w)
     grid.current_tetromino = current_tetromino
 
-    # display a simple menu before opening the game
-    # by using the display_game_menu function defined below
-    display_game_menu(grid_h, grid_w)
-
-    # the main game loop (keyboard interaction for moving the tetromino)
     while True:
-        # check user interactions via the keyboard
-        if stddraw.hasNextKeyTyped():  # check if the user has pressed a key
-            key_typed = stddraw.nextKeyTyped()  # the most recently pressed key
-            # if the left arrow key has been pressed
-            if key_typed == "left":
-                # move the active tetromino left by one
+        if stddraw.hasNextKeyTyped():
+            key_typed = stddraw.nextKeyTyped()
+            if key_typed in ["left", "right", "down"]:
                 current_tetromino.move(key_typed, grid)
-                # if the right arrow key has been pressed
-            elif key_typed == "right":
-                # move the active tetromino right by one
-                current_tetromino.move(key_typed, grid)
-            # if the down arrow key has been pressed
-            elif key_typed == "down":
-                # move the active tetromino down by one
-                # (soft drop: causes the tetromino to fall down faster)
-                current_tetromino.move(key_typed, grid)
-            # if the d key has been passed
-            elif key_typed == "d":
-                # rotate tetromino clockwise by 90deg
+            elif key_typed in ["d", "a"]:
                 current_tetromino.rotate(key_typed)
-            # if the a key pressed rotate tetromino counterclockwise by 90deg
-            elif key_typed == "a":
-                # rotate the active tetromino counter-clockwise
-                current_tetromino.rotate(key_typed)
-            # if the space key has been pressed
             elif key_typed == "space":
-                # hard drop: causes tetromino to fall down to the bottom
                 while current_tetromino.can_be_moved("down", grid):
                     current_tetromino.move("down", grid)
-            # clear the queue of the pressed keys for a smoother interaction
             stddraw.clearKeysTyped()
 
-        # move the active tetromino down by one at each iteration (auto fall)
         success = current_tetromino.move("down", grid)
-
-        # place the active tetromino on the grid when it cannot go down anymore
         if not success:
-            # get the tile matrix of the tetromino without empty rows and columns
-            # and the position of the bottom left cell in this matrix
             tiles, pos = grid.current_tetromino.get_min_bounded_tile_matrix(True)
-            # update the game grid by locking the tiles of the landed tetromino
             game_over = grid.update_grid(tiles, pos)
-            # end the main game loop if the game is over
             if game_over:
                 break
-            # create the next tetromino to enter the game grid
-            # by using the create_tetromino function defined below
             current_tetromino = create_tetromino(grid_h, grid_w)
             grid.current_tetromino = current_tetromino
 
-        # display the game grid and the current tetromino
         grid.display()
 
-    # print a message on the console when the game is over
     print("Game over")
 
 
-# Function for creating random shaped tetrominoes to enter the game grid
+# Function for creating random shaped tetrominoes
 def create_tetromino(grid_height, grid_width):
-    # type (shape) of the tetromino is determined randomly
     tetromino_types = ['I', 'O', 'Z', 'S', 'J', 'L', 'T']
     random_index = random.randint(0, len(tetromino_types) - 1)
     random_type = tetromino_types[random_index]
-    # create and return the tetromino
-    tetromino = Tetromino(random_type)
-    return tetromino
+    return Tetromino(random_type)
 
 
-# Function for displaying a simple menu before starting the game
+def settings_screen():
+    stddraw.setXscale(0, 500)
+    stddraw.setYscale(0, 500)
+    sliderPositions = [SLIDER_X, SLIDER_X]
+    gridSizeValues = [18, 18]  # Default grid size values
+
+    while True:
+        stddraw.clear(BACKGROUND_COLOR)
+        # Draw slider bars for width and height
+        stddraw.setPenColor(BLACK_COLOR)
+        stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_WIDTH, SLIDER_BAR_WIDTH,
+                                SLIDER_BAR_HEIGHT)
+        stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_HEIGHT, SLIDER_BAR_WIDTH,
+                                SLIDER_BAR_HEIGHT)
+        # Draw slider outlines
+        stddraw.setPenColor(BUTTON_COLOR)
+        stddraw.rectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_WIDTH, SLIDER_BAR_WIDTH + 0.5,
+                          SLIDER_BAR_HEIGHT + 0.5)
+        stddraw.rectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_HEIGHT, SLIDER_BAR_WIDTH + 0.5,
+                          SLIDER_BAR_HEIGHT + 0.5)
+        # Draw slider knobs
+        stddraw.setPenColor(WHITE_COLOR)
+        stddraw.filledCircle(sliderPositions[0], SLIDER_Y_WIDTH, SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[1], SLIDER_Y_HEIGHT, SLIDER_RADIUS)
+        # Draw slider values
+        stddraw.setPenColor(BLACK_COLOR)
+        stddraw.text(sliderPositions[0], SLIDER_Y_WIDTH, str(int(gridSizeValues[0])))
+        stddraw.text(sliderPositions[1], SLIDER_Y_HEIGHT, str(int(gridSizeValues[1])))
+        stddraw.setFontSize(14)
+        stddraw.boldText(100, SLIDER_Y_WIDTH + 2, "Width:")
+        stddraw.boldText(100, SLIDER_Y_HEIGHT + 2, "Height:")
+        # Draw continue button
+        stddraw.setPenColor(BUTTON_COLOR)
+        stddraw.filledRectangle(CONTINUE_BUTTON_CENTER[0] - CONTINUE_BUTTON_WIDTH / 2,
+                                CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2,
+                                CONTINUE_BUTTON_WIDTH, CONTINUE_BUTTON_HEIGHT)
+        stddraw.setPenColor(BLACK_COLOR)
+        stddraw.text(CONTINUE_BUTTON_CENTER[0], CONTINUE_BUTTON_CENTER[1], "Start!")
+
+        stddraw.show(10)
+
+        if stddraw.mousePressed():
+            mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
+            # Adjust width slider
+            if SLIDER_BAR_Y_WIDTH - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_WIDTH + SLIDER_RADIUS:
+                if SLIDER_X - SLIDER_BAR_WIDTH / 2 <= mouse_x <= SLIDER_X + SLIDER_BAR_WIDTH / 2:
+                    sliderPositions[0] = mouse_x
+                    gridSizeValues[0] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, WIDTH_MIN_VALUE,
+                                               WIDTH_MAX_VALUE)
+            # Adjust height slider
+            elif SLIDER_BAR_Y_HEIGHT - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_HEIGHT + SLIDER_RADIUS:
+                if SLIDER_X - SLIDER_BAR_WIDTH / 2 <= mouse_x <= SLIDER_X + SLIDER_BAR_WIDTH / 2:
+                    sliderPositions[1] = mouse_x
+                    gridSizeValues[1] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, HEIGHT_MIN_VALUE,
+                                               HEIGHT_MAX_VALUE)
+            # Check continue button click
+            if CONTINUE_BUTTON_CENTER[0] - CONTINUE_BUTTON_WIDTH / 2 <= mouse_x <= CONTINUE_BUTTON_CENTER[
+                0] + CONTINUE_BUTTON_WIDTH / 2 and \
+                    CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2 <= mouse_y <= CONTINUE_BUTTON_CENTER[
+                1] + CONTINUE_BUTTON_HEIGHT / 2:
+                break
+
+    return gridSizeValues[1], gridSizeValues[0]
+
+
+def p_to_c(x, in_min, in_max, out_min, out_max):
+    return int(round(((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)))
+
+
 def display_game_menu(grid_height, grid_width):
-    # colors used for the menu
-    background_color = Color(42, 69, 99)
-    button_color = Color(25, 255, 228)
-    text_color = Color(31, 160, 239)
-    # clear the background canvas to background_color
-    stddraw.clear(background_color)
-    # get the directory in which this python code file is placed
+    stddraw.clear(BACKGROUND_COLOR)
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    # path of the image file
-    img_file = current_dir + "/images/menu_image.png"
-    # center coordinates to display the image
-    img_center_x, img_center_y = (grid_width - 1) / 2, grid_height - 7
-    # image is represented using the Picture class
+    img_file = current_dir + MENU_IMAGE_PATH
+    img_center_x, img_center_y = (grid_width - 1) / 2, grid_height - 6.5
     image_to_display = Picture(img_file)
-    # display the image
     stddraw.picture(image_to_display, img_center_x, img_center_y)
-    # dimensions of the start game button
     button_w, button_h = grid_width - 1.5, 2
-    # coordinates of the bottom left corner of the start game button
-    button_blc_x, button_blc_y = img_center_x - button_w / 2, 4
-    # display the start game button as a filled rectangle
-    stddraw.setPenColor(button_color)
+    button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
+    stddraw.setPenColor(BUTTON_COLOR)
     stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
-    # display the text on the start game button
     stddraw.setFontFamily("Arial")
     stddraw.setFontSize(25)
-    stddraw.setPenColor(text_color)
-    text_to_display = "Click Here to Start the Game"
-    stddraw.text(img_center_x, 5, text_to_display)
-    # menu interaction loop
+    stddraw.setPenColor(TEXT_COLOR)
+    stddraw.text(img_center_x, button_blc_y + 1, BUTTON_TEXT)
     while True:
-        # display the menu and wait for a short time (50 ms)
         stddraw.show(50)
-        # check if the mouse has been left-clicked on the button
         if stddraw.mousePressed():
-            # get the x and y coordinates of the location at which the mouse has
-            # most recently been left-clicked
             mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
-            # check if these coordinates are inside the button
-            if button_blc_x <= mouse_x <= button_blc_x + button_w:
-                if button_blc_y <= mouse_y <= button_blc_y + button_h:
-                    break  # break the loop to end the method and start the game
+            if button_blc_x <= mouse_x <= button_blc_x + button_w and button_blc_y <= mouse_y <= button_blc_y + button_h:
+                break
 
 
 # start() function is specified as the entry point (main function) from which
 # the program starts execution
 if __name__ == '__main__':
     start()
+# Main function where this program starts execution
