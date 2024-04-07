@@ -48,7 +48,7 @@ class Tile:
                 if row < tile_matrix.shape[0] - 1 and tile_matrix[row + 1, col] is not None:
                     adjacent_tile = tile_matrix[row + 1, col]
                     if current_tile.number == adjacent_tile.number:
-                        score += current_tile.merge_matches(adjacent_tile)
+                        score += current_tile.merge_and_update(adjacent_tile)
                         tile_matrix[row + 1, col] = None
                         for r in range(row + 1, tile_matrix.shape[0]):
                             if tile_matrix[r, col] is not None:
