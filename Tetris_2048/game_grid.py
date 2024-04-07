@@ -7,14 +7,16 @@ import numpy as np  # fundamental Python module for scientific computing
 # Class used for modelling the game grid
 class GameGrid:
     # Constructor for creating the game grid based on the given arguments
-    def __init__(self, grid_h, grid_w):
+    def __init__(self, grid_h, grid_w, info_w):
         # set the dimensions of the game grid as the given arguments
         self.grid_height = grid_h
         self.grid_width = grid_w
+        self.info_width = info_w
         # create a tile matrix to store the tiles landed onto the game grid
         self.tile_matrix = np.full((grid_h, grid_w), None)
         # create the tetromino that is currently being moved on the game grid
         self.current_tetromino = None
+        self.next_tetromino = None
         # the game_over flag shows whether the game is over or not
         self.game_over = False
         # set the color used for the empty grid cells
@@ -25,6 +27,7 @@ class GameGrid:
         # thickness values used for the grid lines and the boundaries
         self.line_thickness = 0.002
         self.box_thickness = 10 * self.line_thickness
+        self.score = 0
 
     # Method used for displaying the game grid
     def display(self):
@@ -38,6 +41,7 @@ class GameGrid:
             self.current_tetromino.draw()
         # draw a box around the game grid
         self.draw_boundaries()
+        self.draw_info_panel()
         # show the resulting drawing with a pause duration = 250 ms
         stddraw.show(250)
 
@@ -73,8 +77,20 @@ class GameGrid:
         stddraw.rectangle(pos_x, pos_y, self.grid_width, self.grid_height)
         stddraw.setPenRadius()  # reset the pen radius to its default value
 
-    # Method used for checking whether the grid cell with given row and column
-    # indexes is occupied by a tile or empty
+    def draw_info_panel(self):
+        stddraw.setPenColor(stddraw.LIGHT_GRAY)
+        stddraw.filledRectangle(self.grid_width, 0, self.info_width, self.grid_height)
+        stddraw.setPenColor(stddraw.BLACK)
+        stddraw.rectangle(self.grid_width, 0, self.info_width, self.grid_height)
+        info_center_x = self.grid_width + self.info_width / 2
+        info_center_y = self.grid_height - 1  # Skorun en üstteki konumu
+        stddraw.setFontSize(16)
+        stddraw.setFontFamily("Arial")
+        stddraw.setPenColor(stddraw.BLACK)
+        stddraw.text(info_center_x, info_center_y, "Score: " + str(self.score))
+
+        # Method used for checking whether the grid cell with given row and column
+        # indexes is occupied by a tile or empty
     def is_occupied(self, row, col):
         # considering newly entered tetrominoes to the game grid that may have
         # tiles with position.y >= grid_height
@@ -124,6 +140,7 @@ class GameGrid:
     def remove_full_rows_and_shift(self):
         for row in range(self.grid_height):
             if None not in self.tile_matrix[row]:
+                self.score += sum(tile.number for tile in self.tile_matrix[row] if tile is not None)
                 for shift_row in range(row, self.grid_height - 1):
                     self.tile_matrix[shift_row] = self.tile_matrix[shift_row + 1]
                 self.tile_matrix[self.grid_height - 1] = [None] * self.grid_width
