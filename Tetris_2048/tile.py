@@ -32,7 +32,7 @@ class Tile:
         self.background_color = tile_colors[self.number]['background_color']
         self.foreground_color = tile_colors[self.number]['foreground_color']
 
-    def merge_matches(self, tile):
+    def merge_and_update(self, tile):
         if self.number == tile.number and self.number < 2048:
             self.number *= 2
             tile.number = None
@@ -54,7 +54,7 @@ class Tile:
                             if tile_matrix[r, col] is not None:
                                 tile_matrix[r - 1, col] = tile_matrix[r, col]
                                 tile_matrix[r, col] = None
-                if row > 0 and tile_matrix[row - 1, col] is None and np.all(tile_matrix[:row, col] == None):
+                if row > 0 and tile_matrix[row - 1, col] is None and np.all(tile_matrix[:row, col] is None):
                     tile_matrix[row - 1, col] = current_tile
                     tile_matrix[row, col] = None
         return score
