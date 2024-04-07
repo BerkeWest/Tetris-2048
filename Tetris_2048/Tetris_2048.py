@@ -12,12 +12,12 @@ import random  # used for creating tetrominoes with random types/shapes
 # Main function where this program starts execution
 def start():
     # set the dimensions of the game grid
-    grid_h, grid_w = 20, 12
+    grid_h, grid_w, info_w = 20, 12, 10
     # set the size of the drawing canvas
-    canvas_h, canvas_w = 40 * grid_h, 40 * grid_w
+    canvas_h, canvas_w = 40 * grid_h, 40 * (grid_w + info_w)
     stddraw.setCanvasSize(canvas_w, canvas_h)
     # set the scale of the coordinate system
-    stddraw.setXscale(-0.5, grid_w - 0.5)
+    stddraw.setXscale(-0.5, grid_w + info_w - 0.5)
     stddraw.setYscale(-0.5, grid_h - 0.5)
 
     # set the dimension values stored and used in the Tetromino class
@@ -25,7 +25,7 @@ def start():
     Tetromino.grid_width = grid_w
 
     # create the game grid
-    grid = GameGrid(grid_h, grid_w)
+    grid = GameGrid(grid_h, grid_w, info_w)
     # create the first tetromino to enter the game grid
     # by using the create_tetromino function defined below
     current_tetromino = create_tetromino(grid_h, grid_w)
