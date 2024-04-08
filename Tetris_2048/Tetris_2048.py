@@ -118,7 +118,8 @@ def settings_screen():
         stddraw.setPenColor(BLACK_COLOR)
         stddraw.text(sliderPositions[0], SLIDER_Y_WIDTH, str(int(gridSizeValues[0])))
         stddraw.text(sliderPositions[1], SLIDER_Y_HEIGHT, str(int(gridSizeValues[1])))
-        stddraw.setFontSize(14)
+        stddraw.setFontSize(25)
+        stddraw.setFontFamily("Arial")
         stddraw.boldText(100, SLIDER_Y_WIDTH + 2, "Width:")
         stddraw.boldText(100, SLIDER_Y_HEIGHT + 2, "Height:")
         # Draw continue button
@@ -126,7 +127,7 @@ def settings_screen():
         stddraw.filledRectangle(CONTINUE_BUTTON_CENTER[0] - CONTINUE_BUTTON_WIDTH / 2,
                                 CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2,
                                 CONTINUE_BUTTON_WIDTH, CONTINUE_BUTTON_HEIGHT)
-        stddraw.setPenColor(BLACK_COLOR)
+        stddraw.setPenColor(TEXT_COLOR)
         stddraw.text(CONTINUE_BUTTON_CENTER[0], CONTINUE_BUTTON_CENTER[1], "Start!")
 
         stddraw.show(10)
