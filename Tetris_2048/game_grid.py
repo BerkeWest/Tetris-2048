@@ -8,11 +8,12 @@ import numpy as np  # fundamental Python module for scientific computing
 # Class used for modelling the game grid
 class GameGrid:
     # Constructor for creating the game grid based on the given arguments
-    def __init__(self, grid_h, grid_w, info_w):
+    def __init__(self, grid_h, grid_w, info_w, game_speed):
         # set the dimensions of the game grid as the given arguments
         self.grid_height = grid_h
         self.grid_width = grid_w
         self.info_width = info_w
+        self.game_speed = game_speed
         # create a tile matrix to store the tiles landed onto the game grid
         self.tile_matrix = np.full((grid_h, grid_w), None)
         # create the tetromino that is currently being moved on the game grid
@@ -46,7 +47,7 @@ class GameGrid:
         self.draw_info_panel()
 
         # show the resulting drawing with a pause duration = 250 ms
-        stddraw.show(250)
+        stddraw.show(self.game_speed)
 
     # Method for drawing the cells and the lines of the game grid
     def draw_grid(self):

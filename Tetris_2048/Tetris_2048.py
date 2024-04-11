@@ -21,6 +21,7 @@ BUTTON_TEXT = "Click Here to Go Settings Screen"
 SLIDER_X = 280
 SLIDER_Y_WIDTH = 455
 SLIDER_Y_HEIGHT = 405
+SLIDER_Y_SPEED = 375
 SLIDER_RADIUS = 10
 CONTINUE_BUTTON_CENTER = [250, 100]
 CONTINUE_BUTTON_WIDTH = 300
@@ -35,6 +36,9 @@ SLIDER_BAR_Y_WIDTH = 450
 SLIDER_BAR_Y_HEIGHT = 400
 SLIDER_BAR_WIDTH = 300
 SLIDER_BAR_HEIGHT = 10
+SLIDER_BAR_Y_SPEED = 350
+SPEED_MAX_VALUE = 500
+SPEED_MIN_VALUE = 50
 
 
 # MAIN FUNCTION OF THE PROGRAM
@@ -46,13 +50,13 @@ def start():
     stddraw.setXscale(-0.5, GRID_WIDTH)
     stddraw.setYscale(-0.5, GRID_HEIGHT)
     display_game_menu(GRID_WIDTH, GRID_HEIGHT + 0.5)
-    grid_h, grid_w = settings_screen()
+    grid_h, grid_w, game_speed = settings_screen()
     game_w = grid_w + INFO_WIDTH
     stddraw.setXscale(-0.5, game_w - 0.5)
     stddraw.setYscale(-0.5, grid_h - 0.5)
     Tetromino.grid_height = grid_h
     Tetromino.grid_width = grid_w
-    grid = GameGrid(grid_h, grid_w, INFO_WIDTH)
+    grid = GameGrid(grid_h, grid_w, INFO_WIDTH, game_speed)
     current_tetromino = create_tetromino(grid_h, grid_w)
     grid.current_tetromino = current_tetromino
 
@@ -93,40 +97,45 @@ def create_tetromino(grid_height, grid_width):
 def settings_screen():
     stddraw.setXscale(0, 500)
     stddraw.setYscale(0, 500)
-    sliderPositions = [SLIDER_X, SLIDER_X]
+    sliderPositions = [SLIDER_X, SLIDER_X, SLIDER_X]
     gridSizeValues = [18, 18]  # Default grid size values
+    game_speed = 250  # Default speed value
 
     while True:
         stddraw.clear(BACKGROUND_COLOR)
-        # Draw slider bars for width and height
+        # Draw slider bars for width, height, and speed
         stddraw.setPenColor(BLACK_COLOR)
         stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_WIDTH, SLIDER_BAR_WIDTH,
                                 SLIDER_BAR_HEIGHT)
         stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_HEIGHT, SLIDER_BAR_WIDTH,
                                 SLIDER_BAR_HEIGHT)
-        # Draw slider outlines
-        stddraw.setPenColor(BUTTON_COLOR)
-        stddraw.rectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_WIDTH, SLIDER_BAR_WIDTH + 0.5,
-                          SLIDER_BAR_HEIGHT + 0.5)
-        stddraw.rectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_HEIGHT, SLIDER_BAR_WIDTH + 0.5,
-                          SLIDER_BAR_HEIGHT + 0.5)
+        stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_SPEED, SLIDER_BAR_WIDTH,
+                                SLIDER_BAR_HEIGHT)  # Speed slider bar
+
         # Draw slider knobs
         stddraw.setPenColor(WHITE_COLOR)
-        stddraw.filledCircle(sliderPositions[0], SLIDER_Y_WIDTH, SLIDER_RADIUS)
-        stddraw.filledCircle(sliderPositions[1], SLIDER_Y_HEIGHT, SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[0], SLIDER_BAR_Y_WIDTH, SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[1], SLIDER_BAR_Y_HEIGHT, SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[2], SLIDER_BAR_Y_SPEED, SLIDER_RADIUS)  # Speed slider knob
+
         # Draw slider values
         stddraw.setPenColor(BLACK_COLOR)
-        stddraw.text(sliderPositions[0], SLIDER_Y_WIDTH, str(int(gridSizeValues[0])))
-        stddraw.text(sliderPositions[1], SLIDER_Y_HEIGHT, str(int(gridSizeValues[1])))
+        stddraw.text(sliderPositions[0], SLIDER_Y_WIDTH + 20, str(int(gridSizeValues[0])))
+        stddraw.text(sliderPositions[1], SLIDER_Y_HEIGHT + 20, str(int(gridSizeValues[1])))
+        stddraw.text(sliderPositions[2], SLIDER_Y_SPEED, f" {game_speed}")
+
+        # Labels for sliders
         stddraw.setFontSize(25)
         stddraw.setFontFamily("Arial")
-        stddraw.boldText(100, SLIDER_Y_WIDTH + 2, "Width:")
-        stddraw.boldText(100, SLIDER_Y_HEIGHT + 2, "Height:")
+        stddraw.boldText(100, SLIDER_Y_WIDTH + 25, "Width:")
+        stddraw.boldText(100, SLIDER_Y_HEIGHT + 25, "Height:")
+        stddraw.boldText(100, 375, "Game Speed (ms):")
+
         # Draw continue button
         stddraw.setPenColor(BUTTON_COLOR)
         stddraw.filledRectangle(CONTINUE_BUTTON_CENTER[0] - CONTINUE_BUTTON_WIDTH / 2,
-                                CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2,
-                                CONTINUE_BUTTON_WIDTH, CONTINUE_BUTTON_HEIGHT)
+                                CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2, CONTINUE_BUTTON_WIDTH,
+                                CONTINUE_BUTTON_HEIGHT)
         stddraw.setPenColor(TEXT_COLOR)
         stddraw.text(CONTINUE_BUTTON_CENTER[0], CONTINUE_BUTTON_CENTER[1], "Start!")
 
@@ -134,26 +143,27 @@ def settings_screen():
 
         if stddraw.mousePressed():
             mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
-            # Adjust width slider
             if SLIDER_BAR_Y_WIDTH - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_WIDTH + SLIDER_RADIUS:
-                if SLIDER_X - SLIDER_BAR_WIDTH / 2 <= mouse_x <= SLIDER_X + SLIDER_BAR_WIDTH / 2:
+                if SLIDER_MIN_X <= mouse_x <= SLIDER_MAX_X:
                     sliderPositions[0] = mouse_x
-                    gridSizeValues[0] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, WIDTH_MIN_VALUE,
-                                               WIDTH_MAX_VALUE)
-            # Adjust height slider
+                    gridSizeValues[0] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, WIDTH_MIN_VALUE, WIDTH_MAX_VALUE)
             elif SLIDER_BAR_Y_HEIGHT - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_HEIGHT + SLIDER_RADIUS:
-                if SLIDER_X - SLIDER_BAR_WIDTH / 2 <= mouse_x <= SLIDER_X + SLIDER_BAR_WIDTH / 2:
+                if SLIDER_MIN_X <= mouse_x <= SLIDER_MAX_X:
                     sliderPositions[1] = mouse_x
-                    gridSizeValues[1] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, HEIGHT_MIN_VALUE,
-                                               HEIGHT_MAX_VALUE)
-            # Check continue button click
+                    gridSizeValues[1] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, HEIGHT_MIN_VALUE, HEIGHT_MAX_VALUE)
+            elif SLIDER_BAR_Y_SPEED - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_SPEED + SLIDER_RADIUS:
+                if SLIDER_MIN_X <= mouse_x <= SLIDER_MAX_X:
+                    sliderPositions[2] = mouse_x
+                    game_speed = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, SPEED_MIN_VALUE,
+                                        SPEED_MAX_VALUE)
+
             if CONTINUE_BUTTON_CENTER[0] - CONTINUE_BUTTON_WIDTH / 2 <= mouse_x <= CONTINUE_BUTTON_CENTER[
                 0] + CONTINUE_BUTTON_WIDTH / 2 and \
                     CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2 <= mouse_y <= CONTINUE_BUTTON_CENTER[
                 1] + CONTINUE_BUTTON_HEIGHT / 2:
                 break
 
-    return gridSizeValues[1], gridSizeValues[0]
+    return gridSizeValues[1], gridSizeValues[0], game_speed
 
 
 def p_to_c(x, in_min, in_max, out_min, out_max):
