@@ -24,9 +24,9 @@ class Texts:
     START_GAME = "Start!"
     HOW_TO_PLAY = (
         "Use 'A' to rotate the tetromino counter-clockwise and 'D' to rotate it clockwise. "
-        "Use the left and right arrow keys to move the tetromino sideways. Down arrow to soft drop "
+        "Use the Left and Right Arrow Keys to move the tetromino sideways. Down arrow to soft drop "
         "and the space bar for a hard drop. You lose if a tetromino exits the play area, "
-        "and you win the game if your score reaches 2048."
+        "and you win the game if your score reaches 2048. You can also press 'ESC' to stop game. "
     )
 
 
@@ -75,31 +75,36 @@ def start():
     grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
     current_tetromino = create_tetromino()
     grid.current_tetromino = current_tetromino
+    is_paused = False
 
     while True:
         if stddraw.hasNextKeyTyped():
             key_typed = stddraw.nextKeyTyped()
-            if key_typed in ["left", "right", "down"]:
-                current_tetromino.move(key_typed, grid)
-            elif key_typed in ["d", "a"]:
-                current_tetromino.rotate(key_typed)
-            elif key_typed == "space":
-                while current_tetromino.can_be_moved("down", grid):
-                    current_tetromino.move("down", grid)
+            if key_typed == "escape":
+                is_paused = not is_paused  # Toggle pause state
+            if not is_paused:
+                if key_typed in ["left", "right", "down"]:
+                    current_tetromino.move(key_typed, grid)
+                elif key_typed in ["d", "a"]:
+                    current_tetromino.rotate(key_typed)
+                elif key_typed == "space":
+                    while current_tetromino.can_be_moved("down", grid):
+                        current_tetromino.move("down", grid)
             stddraw.clearKeysTyped()
 
-        success = current_tetromino.move("down", grid)
-        if not success:
-            tiles, pos = grid.current_tetromino.get_min_bounded_tile_matrix(True)
-            game_over = grid.update_grid(tiles, pos)
-            if game_over:
-                is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
-                if is_restarted:
-                    grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
-                else:
-                    start()  # returns the start of the loop
-            current_tetromino = create_tetromino()
-            grid.current_tetromino = current_tetromino
+        if not is_paused:
+            success = current_tetromino.move("down", grid)
+            if not success:
+                tiles, pos = grid.current_tetromino.get_min_bounded_tile_matrix(True)
+                game_over = grid.update_grid(tiles, pos)
+                if game_over:
+                    is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
+                    if is_restarted:
+                        grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
+                    else:
+                        start()  # returns the start of the loop
+                current_tetromino = create_tetromino()
+                grid.current_tetromino = current_tetromino
 
         grid.display()
 
