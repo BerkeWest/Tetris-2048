@@ -1,9 +1,6 @@
 import random
-
 import numpy as np
-
 from tile_color import tile_colors
-
 import lib.stddraw as stddraw  # stddraw is used as a basic graphics library
 from lib.color import Color  # used for coloring the tile and the number on it
 

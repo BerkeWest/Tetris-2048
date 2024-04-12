@@ -6,58 +6,74 @@ from game_grid import GameGrid  # the class for modeling the game grid
 from tetromino import Tetromino  # the class for modeling the tetrominoes
 import random  # used for creating tetrominoes with random types/shapes
 
-CANVAS_WIDTH = 800
-CANVAS_HEIGHT = 800
-GRID_HEIGHT = 16
-GRID_WIDTH = 16
-INFO_WIDTH = 8
-BACKGROUND_COLOR = Color(139, 120, 128)
-BUTTON_COLOR = Color(100, 100, 128)
-TEXT_COLOR = Color(31, 160, 239)
-BLACK_COLOR = Color(0, 0, 0)
-WHITE_COLOR = Color(255, 255, 255)
-MENU_IMAGE_PATH = "/images/menu_image.png"
-BUTTON_TEXT = "Click Here to Go Settings Screen"
-SLIDER_X = 280
-SLIDER_Y_WIDTH = 455
-SLIDER_Y_HEIGHT = 405
-SLIDER_Y_SPEED = 375
-SLIDER_RADIUS = 10
-CONTINUE_BUTTON_CENTER = [250, 100]
-CONTINUE_BUTTON_WIDTH = 300
-CONTINUE_BUTTON_HEIGHT = 50
-SLIDER_MIN_X = 130
-SLIDER_MAX_X = 430
-WIDTH_MIN_VALUE = 12
-WIDTH_MAX_VALUE = 24
-HEIGHT_MIN_VALUE = 12
-HEIGHT_MAX_VALUE = 24
-SLIDER_BAR_Y_WIDTH = 450
-SLIDER_BAR_Y_HEIGHT = 400
-SLIDER_BAR_WIDTH = 300
-SLIDER_BAR_HEIGHT = 10
-SLIDER_BAR_Y_SPEED = 350
-SPEED_MAX_VALUE = 500
-SPEED_MIN_VALUE = 50
+
+# Configuration classes
+class Colors:
+    BACKGROUND = Color(139, 120, 128)
+    BUTTON = Color(100, 100, 128)
+    TEXT = Color(31, 160, 239)
+    BLACK = Color(0, 0, 0)
+    WHITE = Color(255, 255, 255)
 
 
-# MAIN FUNCTION OF THE PROGRAM
-# -------------------------------------------------------------------------------
+class Texts:
+    BUTTON_TEXT = "Click Here to Go Settings Screen"
+    GAME_OVER_WIN = "Game Over, Win"
+    GAME_OVER_LOSE = "Game Over, Lose"
+    PLAY_AGAIN = "Play Again"
+    START_GAME = "Start!"
+    HOW_TO_PLAY = (
+        "Use 'A' to rotate the tetromino counter-clockwise and 'D' to rotate it clockwise. "
+        "Use the left and right arrow keys to move the tetromino sideways. Down arrow to soft drop "
+        "and the space bar for a hard drop. You lose if a tetromino exits the play area, "
+        "and you win the game if your score reaches 2048."
+    )
 
 
+class Dimensions:
+    CANVAS_WIDTH = 800
+    CANVAS_HEIGHT = 800
+    GRID_HEIGHT = 16
+    GRID_WIDTH = 16
+    INFO_WIDTH = 8
+    SLIDER_RADIUS = 10
+    SLIDER_X = 280
+    SLIDER_Y_WIDTH = 455
+    SLIDER_Y_HEIGHT = 405
+    SLIDER_Y_SPEED = 375
+    CONTINUE_BUTTON_CENTER = [250, 100]
+    CONTINUE_BUTTON_WIDTH = 300
+    CONTINUE_BUTTON_HEIGHT = 50
+    SLIDER_MIN_X = 130
+    SLIDER_MAX_X = 430
+    WIDTH_MIN_VALUE = 12
+    WIDTH_MAX_VALUE = 24
+    HEIGHT_MIN_VALUE = 12
+    HEIGHT_MAX_VALUE = 24
+    SLIDER_BAR_Y_WIDTH = 450
+    SLIDER_BAR_Y_HEIGHT = 400
+    SLIDER_BAR_WIDTH = 300
+    SLIDER_BAR_HEIGHT = 10
+    SLIDER_BAR_Y_SPEED = 350
+    SPEED_MAX_VALUE = 500
+    SPEED_MIN_VALUE = 50
+    MENU_IMAGE_PATH = "/images/menu_image.png"
+
+
+# Main program function
 def start():
-    stddraw.setCanvasSize(CANVAS_WIDTH, CANVAS_HEIGHT)
-    stddraw.setXscale(-0.5, GRID_WIDTH)
-    stddraw.setYscale(-0.5, GRID_HEIGHT)
-    display_game_menu(GRID_WIDTH, GRID_HEIGHT + 0.5)
-    grid_h, grid_w, game_speed = settings_screen()
-    game_w = grid_w + INFO_WIDTH
+    stddraw.setCanvasSize(Dimensions.CANVAS_WIDTH, Dimensions.CANVAS_HEIGHT)
+    stddraw.setXscale(-0.5, Dimensions.GRID_WIDTH)
+    stddraw.setYscale(-0.5, Dimensions.GRID_HEIGHT)
+    display_game_menu(Dimensions.GRID_WIDTH, Dimensions.GRID_HEIGHT)
+    grid_h, grid_w, game_speed = display_settings_screen()
+    game_w = grid_w + Dimensions.INFO_WIDTH
     stddraw.setXscale(-0.5, game_w - 0.5)
     stddraw.setYscale(-0.5, grid_h - 0.5)
     Tetromino.grid_height = grid_h
     Tetromino.grid_width = grid_w
-    grid = GameGrid(grid_h, grid_w, INFO_WIDTH, game_speed)
-    current_tetromino = create_tetromino(grid_h, grid_w)
+    grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
+    current_tetromino = create_tetromino()
     grid.current_tetromino = current_tetromino
 
     while True:
@@ -77,114 +93,170 @@ def start():
             tiles, pos = grid.current_tetromino.get_min_bounded_tile_matrix(True)
             game_over = grid.update_grid(tiles, pos)
             if game_over:
-                break
-            current_tetromino = create_tetromino(grid_h, grid_w)
+                is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
+                if is_restarted:
+                    grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
+                else:
+                    start()  # returns the start of the loop
+            current_tetromino = create_tetromino()
             grid.current_tetromino = current_tetromino
 
         grid.display()
 
-    print("Game over")
-
 
 # Function for creating random shaped tetrominoes
-def create_tetromino(grid_height, grid_width):
+def create_tetromino():
     tetromino_types = ['I', 'O', 'Z', 'S', 'J', 'L', 'T']
     random_index = random.randint(0, len(tetromino_types) - 1)
     random_type = tetromino_types[random_index]
     return Tetromino(random_type)
 
 
-def settings_screen():
+def p_to_c(x, in_min, in_max, out_min, out_max):
+    return int(round(((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)))
+
+
+def display_settings_screen():
     stddraw.setXscale(0, 500)
     stddraw.setYscale(0, 500)
-    sliderPositions = [SLIDER_X, SLIDER_X, SLIDER_X]
+    sliderPositions = [Dimensions.SLIDER_X, Dimensions.SLIDER_X, Dimensions.SLIDER_X]
     gridSizeValues = [18, 18]  # Default grid size values
     game_speed = 250  # Default speed value
 
     while True:
-        stddraw.clear(BACKGROUND_COLOR)
+        stddraw.clear(Colors.BACKGROUND)
         # Draw slider bars for width, height, and speed
-        stddraw.setPenColor(BLACK_COLOR)
-        stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_WIDTH, SLIDER_BAR_WIDTH,
-                                SLIDER_BAR_HEIGHT)
-        stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_HEIGHT, SLIDER_BAR_WIDTH,
-                                SLIDER_BAR_HEIGHT)
-        stddraw.filledRectangle(SLIDER_X - SLIDER_BAR_WIDTH / 2, SLIDER_BAR_Y_SPEED, SLIDER_BAR_WIDTH,
-                                SLIDER_BAR_HEIGHT)  # Speed slider bar
+        stddraw.setPenColor(Colors.BLACK)
+        stddraw.filledRectangle(Dimensions.SLIDER_X - Dimensions.SLIDER_BAR_WIDTH / 2, Dimensions.SLIDER_BAR_Y_WIDTH,
+                                Dimensions.SLIDER_BAR_WIDTH,
+                                Dimensions.SLIDER_BAR_HEIGHT)
+        stddraw.filledRectangle(Dimensions.SLIDER_X - Dimensions.SLIDER_BAR_WIDTH / 2, Dimensions.SLIDER_BAR_Y_HEIGHT,
+                                Dimensions.SLIDER_BAR_WIDTH,
+                                Dimensions.SLIDER_BAR_HEIGHT)
+        stddraw.filledRectangle(Dimensions.SLIDER_X - Dimensions.SLIDER_BAR_WIDTH / 2, Dimensions.SLIDER_BAR_Y_SPEED,
+                                Dimensions.SLIDER_BAR_WIDTH,
+                                Dimensions.SLIDER_BAR_HEIGHT)
 
         # Draw slider knobs
-        stddraw.setPenColor(WHITE_COLOR)
-        stddraw.filledCircle(sliderPositions[0], SLIDER_BAR_Y_WIDTH, SLIDER_RADIUS)
-        stddraw.filledCircle(sliderPositions[1], SLIDER_BAR_Y_HEIGHT, SLIDER_RADIUS)
-        stddraw.filledCircle(sliderPositions[2], SLIDER_BAR_Y_SPEED, SLIDER_RADIUS)  # Speed slider knob
+        stddraw.setPenColor(Colors.WHITE)
+        stddraw.filledCircle(sliderPositions[0], Dimensions.SLIDER_BAR_Y_WIDTH+5, Dimensions.SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[1], Dimensions.SLIDER_BAR_Y_HEIGHT+5, Dimensions.SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[2], Dimensions.SLIDER_BAR_Y_SPEED+5,
+                             Dimensions.SLIDER_RADIUS)
 
         # Draw slider values
-        stddraw.setPenColor(BLACK_COLOR)
-        stddraw.text(sliderPositions[0], SLIDER_Y_WIDTH + 20, str(int(gridSizeValues[0])))
-        stddraw.text(sliderPositions[1], SLIDER_Y_HEIGHT + 20, str(int(gridSizeValues[1])))
-        stddraw.text(sliderPositions[2], SLIDER_Y_SPEED, f" {game_speed}")
+        stddraw.setPenColor(Colors.BLACK)
+        stddraw.text(sliderPositions[0], Dimensions.SLIDER_Y_WIDTH + 20, str(int(gridSizeValues[0])))
+        stddraw.text(sliderPositions[1], Dimensions.SLIDER_Y_HEIGHT + 20, str(int(gridSizeValues[1])))
+        stddraw.text(sliderPositions[2], Dimensions.SLIDER_Y_SPEED, f" {game_speed}")
 
         # Labels for sliders
         stddraw.setFontSize(25)
         stddraw.setFontFamily("Arial")
-        stddraw.boldText(100, SLIDER_Y_WIDTH + 25, "Width:")
-        stddraw.boldText(100, SLIDER_Y_HEIGHT + 25, "Height:")
-        stddraw.boldText(100, 375, "Game Speed (ms):")
+        stddraw.boldText(100, Dimensions.SLIDER_Y_WIDTH + 25, "Width:")
+        stddraw.boldText(100, Dimensions.SLIDER_Y_HEIGHT + 25, "Height:")
+        stddraw.boldText(100, 375, "Game Speed:")
 
         # Draw continue button
-        stddraw.setPenColor(BUTTON_COLOR)
-        stddraw.filledRectangle(CONTINUE_BUTTON_CENTER[0] - CONTINUE_BUTTON_WIDTH / 2,
-                                CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2, CONTINUE_BUTTON_WIDTH,
-                                CONTINUE_BUTTON_HEIGHT)
-        stddraw.setPenColor(TEXT_COLOR)
-        stddraw.text(CONTINUE_BUTTON_CENTER[0], CONTINUE_BUTTON_CENTER[1], "Start!")
+        stddraw.setPenColor(Colors.BUTTON)
+        stddraw.filledRectangle(Dimensions.CONTINUE_BUTTON_CENTER[0] - Dimensions.CONTINUE_BUTTON_WIDTH / 2,
+                                Dimensions.CONTINUE_BUTTON_CENTER[1] - Dimensions.CONTINUE_BUTTON_HEIGHT / 2,
+                                Dimensions.CONTINUE_BUTTON_WIDTH,
+                                Dimensions.CONTINUE_BUTTON_HEIGHT)
+        stddraw.setPenColor(Colors.TEXT)
+        stddraw.text(Dimensions.CONTINUE_BUTTON_CENTER[0], Dimensions.CONTINUE_BUTTON_CENTER[1], Texts.START_GAME)
 
         stddraw.show(10)
 
         if stddraw.mousePressed():
             mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
-            if SLIDER_BAR_Y_WIDTH - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_WIDTH + SLIDER_RADIUS:
-                if SLIDER_MIN_X <= mouse_x <= SLIDER_MAX_X:
+            if Dimensions.SLIDER_BAR_Y_WIDTH - Dimensions.SLIDER_RADIUS <= mouse_y <= Dimensions.SLIDER_BAR_Y_WIDTH + Dimensions.SLIDER_RADIUS:
+                if Dimensions.SLIDER_MIN_X <= mouse_x <= Dimensions.SLIDER_MAX_X:
                     sliderPositions[0] = mouse_x
-                    gridSizeValues[0] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, WIDTH_MIN_VALUE, WIDTH_MAX_VALUE)
-            elif SLIDER_BAR_Y_HEIGHT - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_HEIGHT + SLIDER_RADIUS:
-                if SLIDER_MIN_X <= mouse_x <= SLIDER_MAX_X:
+                    gridSizeValues[0] = p_to_c(mouse_x, Dimensions.SLIDER_MIN_X, Dimensions.SLIDER_MAX_X,
+                                               Dimensions.WIDTH_MIN_VALUE, Dimensions.WIDTH_MAX_VALUE)
+            elif Dimensions.SLIDER_BAR_Y_HEIGHT - Dimensions.SLIDER_RADIUS <= mouse_y <= Dimensions.SLIDER_BAR_Y_HEIGHT + Dimensions.SLIDER_RADIUS:
+                if Dimensions.SLIDER_MIN_X <= mouse_x <= Dimensions.SLIDER_MAX_X:
                     sliderPositions[1] = mouse_x
-                    gridSizeValues[1] = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, HEIGHT_MIN_VALUE, HEIGHT_MAX_VALUE)
-            elif SLIDER_BAR_Y_SPEED - SLIDER_RADIUS <= mouse_y <= SLIDER_BAR_Y_SPEED + SLIDER_RADIUS:
-                if SLIDER_MIN_X <= mouse_x <= SLIDER_MAX_X:
+                    gridSizeValues[1] = p_to_c(mouse_x, Dimensions.SLIDER_MIN_X, Dimensions.SLIDER_MAX_X,
+                                               Dimensions.HEIGHT_MIN_VALUE, Dimensions.HEIGHT_MAX_VALUE)
+            elif Dimensions.SLIDER_BAR_Y_SPEED - Dimensions.SLIDER_RADIUS <= mouse_y <= Dimensions.SLIDER_BAR_Y_SPEED + Dimensions.SLIDER_RADIUS:
+                if Dimensions.SLIDER_MIN_X <= mouse_x <= Dimensions.SLIDER_MAX_X:
                     sliderPositions[2] = mouse_x
-                    game_speed = p_to_c(mouse_x, SLIDER_MIN_X, SLIDER_MAX_X, SPEED_MIN_VALUE,
-                                        SPEED_MAX_VALUE)
+                    game_speed = p_to_c(mouse_x, Dimensions.SLIDER_MIN_X, Dimensions.SLIDER_MAX_X,
+                                        Dimensions.SPEED_MIN_VALUE,
+                                        Dimensions.SPEED_MAX_VALUE)
 
-            if CONTINUE_BUTTON_CENTER[0] - CONTINUE_BUTTON_WIDTH / 2 <= mouse_x <= CONTINUE_BUTTON_CENTER[
-                0] + CONTINUE_BUTTON_WIDTH / 2 and \
-                    CONTINUE_BUTTON_CENTER[1] - CONTINUE_BUTTON_HEIGHT / 2 <= mouse_y <= CONTINUE_BUTTON_CENTER[
-                1] + CONTINUE_BUTTON_HEIGHT / 2:
+            if Dimensions.CONTINUE_BUTTON_CENTER[0] - Dimensions.CONTINUE_BUTTON_WIDTH / 2 <= mouse_x <= \
+                    Dimensions.CONTINUE_BUTTON_CENTER[
+                        0] + Dimensions.CONTINUE_BUTTON_WIDTH / 2 and \
+                    Dimensions.CONTINUE_BUTTON_CENTER[1] - Dimensions.CONTINUE_BUTTON_HEIGHT / 2 <= mouse_y <= \
+                    Dimensions.CONTINUE_BUTTON_CENTER[
+                        1] + Dimensions.CONTINUE_BUTTON_HEIGHT / 2:
                 break
 
     return gridSizeValues[1], gridSizeValues[0], game_speed
 
 
-def p_to_c(x, in_min, in_max, out_min, out_max):
-    return int(round(((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)))
+def display_game_over_screen(grid_h, grid_w, current_score):
+    stddraw.clear(Colors.BACKGROUND)
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    img_file = current_dir + Dimensions.MENU_IMAGE_PATH
+    img_center_x, img_center_y = (grid_w - 1) / 2, grid_h - 6.5
+    image_to_display = Picture(img_file)
+    stddraw.picture(image_to_display, img_center_x, img_center_y)
+    button_w, button_h = grid_w - 6, 1.5
+    button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
+    stddraw.setPenColor(Colors.BUTTON)
+    stddraw.setFontFamily("Arial")
+    stddraw.setFontSize(40)
+    game_over_text = Texts.GAME_OVER_WIN if current_score > 2048 else Texts.GAME_OVER_LOSE
+    stddraw.boldText(img_center_x, (button_blc_y + img_center_y) / 2, game_over_text)
+    stddraw.setFontSize(25)
+    stddraw.text(img_center_x, (button_blc_y + img_center_y) / 2 - 1.5, "Score: " + str(current_score))
+
+    stddraw.setPenColor(Colors.BUTTON)
+    stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
+    stddraw.setFontFamily("Arial")
+    stddraw.setFontSize(25)
+    stddraw.setPenColor(Colors.TEXT)
+    stddraw.text(img_center_x, button_blc_y + 0.75, Texts.PLAY_AGAIN)
+
+    while True:
+        stddraw.show(50)
+        if stddraw.mousePressed():
+            mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
+            if button_blc_x <= mouse_x <= button_blc_x + button_w:
+                if button_blc_y <= mouse_y <= button_blc_y + button_h:
+                    return True
 
 
 def display_game_menu(grid_height, grid_width):
-    stddraw.clear(BACKGROUND_COLOR)
+    stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    img_file = current_dir + MENU_IMAGE_PATH
-    img_center_x, img_center_y = (grid_width - 1) / 2, grid_height - 6.5
+    img_file = current_dir + Dimensions.MENU_IMAGE_PATH
+    img_center_x, img_center_y = (grid_width - 1) / 2, grid_height -3
     image_to_display = Picture(img_file)
     stddraw.picture(image_to_display, img_center_x, img_center_y)
     button_w, button_h = grid_width - 1.5, 2
     button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
-    stddraw.setPenColor(BUTTON_COLOR)
+
+    stddraw.setPenColor(Colors.BUTTON)
     stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
     stddraw.setFontFamily("Arial")
     stddraw.setFontSize(25)
-    stddraw.setPenColor(TEXT_COLOR)
-    stddraw.text(img_center_x, button_blc_y + 1, BUTTON_TEXT)
+    stddraw.setPenColor(Colors.TEXT)
+    stddraw.text(img_center_x, button_blc_y + 1, Texts.BUTTON_TEXT)
+
+    instructions = Texts.HOW_TO_PLAY.split(". ")
+    instructions_y_position = 9
+    stddraw.setFontSize(20)
+    stddraw.setPenColor(Colors.WHITE)
+
+    # Draw each line of the instructions
+    for i, line in enumerate(instructions):
+        stddraw.text(img_center_x, instructions_y_position - i, line)
+
     while True:
         stddraw.show(50)
         if stddraw.mousePressed():
