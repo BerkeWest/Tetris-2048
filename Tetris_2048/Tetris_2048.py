@@ -215,7 +215,7 @@ def display_game_over_screen(grid_h, grid_w, current_score):
     stddraw.setPenColor(Colors.BUTTON)
     stddraw.setFontFamily("Arial")
     stddraw.setFontSize(40)
-    game_over_text = Texts.GAME_OVER_WIN if current_score > 2048 else Texts.GAME_OVER_LOSE
+    game_over_text = Texts.GAME_OVER_WIN if current_score >= 2048 else Texts.GAME_OVER_LOSE
     stddraw.boldText(img_center_x, (button_blc_y + img_center_y) / 2, game_over_text)
     stddraw.setFontSize(25)
     stddraw.text(img_center_x, (button_blc_y + img_center_y) / 2 - 1.5, "Score: " + str(current_score))

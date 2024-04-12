@@ -164,13 +164,15 @@ class GameGrid:
                     if self.is_inside(pos_y, pos_x):
                         self.tile_matrix[pos_y][pos_x] = tiles_to_lock[row][col]
                     # the game is over if any placed tile is above the game grid
+
                     else:
                         self.game_over = True
                         return self.game_over
 
         # After locking the tiles, remove the full rows and update the grid
         self.remove_full_rows_and_shift()
-
+        if self.score >= 2048:
+            self.game_over = True
         return self.game_over
 
     def remove_full_rows_and_shift(self):
