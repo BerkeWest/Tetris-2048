@@ -10,8 +10,8 @@ import random  # used for creating tetrominoes with random types/shapes
 # Configuration classes
 class Colors:
     BACKGROUND = Color(139, 120, 128)
-    BUTTON = Color(100, 100, 128)
-    TEXT = Color(31, 160, 239)
+    BUTTON = Color(0, 0, 0)
+    TEXT = Color(255, 255, 255)
     BLACK = Color(0, 0, 0)
     WHITE = Color(255, 255, 255)
 
@@ -144,13 +144,13 @@ def display_settings_screen():
 
         # Draw slider knobs
         stddraw.setPenColor(Colors.WHITE)
-        stddraw.filledCircle(sliderPositions[0], Dimensions.SLIDER_BAR_Y_WIDTH+5, Dimensions.SLIDER_RADIUS)
-        stddraw.filledCircle(sliderPositions[1], Dimensions.SLIDER_BAR_Y_HEIGHT+5, Dimensions.SLIDER_RADIUS)
-        stddraw.filledCircle(sliderPositions[2], Dimensions.SLIDER_BAR_Y_SPEED+5,
+        stddraw.filledCircle(sliderPositions[0], Dimensions.SLIDER_BAR_Y_WIDTH + 5, Dimensions.SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[1], Dimensions.SLIDER_BAR_Y_HEIGHT + 5, Dimensions.SLIDER_RADIUS)
+        stddraw.filledCircle(sliderPositions[2], Dimensions.SLIDER_BAR_Y_SPEED + 5,
                              Dimensions.SLIDER_RADIUS)
 
         # Draw slider values
-        stddraw.setPenColor(Colors.BLACK)
+        stddraw.setPenColor(Colors.WHITE)
         stddraw.text(sliderPositions[0], Dimensions.SLIDER_Y_WIDTH + 20, str(int(gridSizeValues[0])))
         stddraw.text(sliderPositions[1], Dimensions.SLIDER_Y_HEIGHT + 20, str(int(gridSizeValues[1])))
         stddraw.text(sliderPositions[2], Dimensions.SLIDER_Y_SPEED, f" {game_speed}")
@@ -160,7 +160,7 @@ def display_settings_screen():
         stddraw.setFontFamily("Arial")
         stddraw.boldText(100, Dimensions.SLIDER_Y_WIDTH + 25, "Width:")
         stddraw.boldText(100, Dimensions.SLIDER_Y_HEIGHT + 25, "Height:")
-        stddraw.boldText(100, 375, "Game Speed:")
+        stddraw.boldText(100, 375, "Game Speed (ms):")
 
         # Draw continue button
         stddraw.setPenColor(Colors.BUTTON)
@@ -207,7 +207,7 @@ def display_game_over_screen(grid_h, grid_w, current_score):
     stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
     img_file = current_dir + Dimensions.MENU_IMAGE_PATH
-    img_center_x, img_center_y = (grid_w - 1) / 2, grid_h - 6.5
+    img_center_x, img_center_y = (grid_w - 1) / 2, grid_h - 3
     image_to_display = Picture(img_file)
     stddraw.picture(image_to_display, img_center_x, img_center_y)
     button_w, button_h = grid_w - 6, 1.5
@@ -240,10 +240,10 @@ def display_game_menu(grid_height, grid_width):
     stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
     img_file = current_dir + Dimensions.MENU_IMAGE_PATH
-    img_center_x, img_center_y = (grid_width - 1) / 2, grid_height -3
+    img_center_x, img_center_y = (grid_width - 0.75) / 2, grid_height - 3
     image_to_display = Picture(img_file)
     stddraw.picture(image_to_display, img_center_x, img_center_y)
-    button_w, button_h = grid_width - 1.5, 2
+    button_w, button_h = grid_width - 1.5, 1.8
     button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
 
     stddraw.setPenColor(Colors.BUTTON)

@@ -1,3 +1,4 @@
+import sys
 import lib.stddraw as stddraw  # stddraw is used as a basic graphics library
 from tile import Tile
 from lib.color import Color  # used for coloring the game grid
@@ -83,14 +84,45 @@ class GameGrid:
 
     def draw_info_panel(self):
         stddraw.setPenColor(Color(139, 120, 128))
-        stddraw.filledRectangle(self.grid_width - 0.5, -0.5, self.info_width, self.grid_height)
-        info_center_x_scale = (self.grid_width + self.info_width / 2) - 0.5
-        info_score_y_scale = (self.grid_height - 2)
-        # draw the score
+        stddraw.filledRectangle(self.grid_width - 0.5, -0.5, self.info_width, self.grid_height + 0.5)
+        info_center_x_scale = self.grid_width + self.info_width / 2 - 0.5
+        info_score_y_scale = self.grid_height - 2
+
+        # Draw the score
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
         stddraw.setFontSize(20)
         stddraw.boldText(info_center_x_scale, info_score_y_scale, "Your Score: " + str(self.score))
+
+        # Draw the "esc" to stop
+        stddraw.setPenColor(Color(255, 255, 255))
+        stddraw.setFontFamily("Arial")
+        stddraw.setFontSize(20)
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 3, "ESC=Stop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 4, "A-D=Rotate")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 6, "Left-Right Arrow=Move")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 5, "Space=Hard Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 7, "Down Arrow=Soft Drop")
+
+        # Exit game button positioning
+        button_height = 1
+        button_width = self.info_width - 2
+        button_top = 0.5  # Distance from bottom of the info panel
+        button_center_y = button_top + button_height / 2
+
+        stddraw.setPenColor(self.boundary_color)
+        stddraw.filledRectangle(self.grid_width + 0.5, button_top, button_width, button_height)
+        stddraw.setPenColor(Color(255, 255, 255))
+        stddraw.setFontFamily("Arial")
+        stddraw.setFontSize(20)
+        stddraw.boldText(info_center_x_scale, button_center_y, "Exit Game")
+
+        # Handle button click
+        if stddraw.mousePressed():
+            mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
+            if (self.grid_width + 0.5 <= mouse_x <= self.grid_width + button_width + 0.5 and
+                    button_top <= mouse_y <= button_top + button_height):
+                sys.exit()  # Exit the program if the button is clicked
 
         # Method used for checking whether the grid cell with given row and column
         # indexes is occupied by a tile or empty
