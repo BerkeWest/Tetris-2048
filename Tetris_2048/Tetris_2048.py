@@ -62,7 +62,6 @@ class Dimensions:
 
 # Main program function
 def start():
-    stddraw.setCanvasSize(Dimensions.CANVAS_WIDTH, Dimensions.CANVAS_HEIGHT)
     stddraw.setXscale(-0.5, Dimensions.GRID_WIDTH)
     stddraw.setYscale(-0.5, Dimensions.GRID_HEIGHT)
     display_game_menu(Dimensions.GRID_WIDTH, Dimensions.GRID_HEIGHT)
@@ -101,7 +100,7 @@ def start():
                     is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
                     if is_restarted:
                         grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
-                    else:
+                    elif not is_restarted:
                         start()  # returns the start of the loop
                 current_tetromino = create_tetromino()
                 grid.current_tetromino = current_tetromino
@@ -212,6 +211,7 @@ def display_game_over_screen(grid_h, grid_w, current_score):
     stddraw.picture(image_to_display, img_center_x, img_center_y)
     button_w, button_h = grid_w - 6, 1.5
     button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
+    menu_button_y = button_blc_y - 2
     stddraw.setPenColor(Colors.BUTTON)
     stddraw.setFontFamily("Arial")
     stddraw.setFontSize(40)
@@ -220,12 +220,19 @@ def display_game_over_screen(grid_h, grid_w, current_score):
     stddraw.setFontSize(25)
     stddraw.text(img_center_x, (button_blc_y + img_center_y) / 2 - 1.5, "Score: " + str(current_score))
 
+    # play again button
     stddraw.setPenColor(Colors.BUTTON)
     stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
     stddraw.setFontFamily("Arial")
     stddraw.setFontSize(25)
     stddraw.setPenColor(Colors.TEXT)
     stddraw.text(img_center_x, button_blc_y + 0.75, Texts.PLAY_AGAIN)
+
+    # return to main menu button
+    stddraw.setPenColor(Colors.BUTTON)
+    stddraw.filledRectangle(button_blc_x, menu_button_y, button_w, button_h)
+    stddraw.setPenColor(Colors.TEXT)
+    stddraw.text(img_center_x, menu_button_y + 0.75, "Return to Main Menu")
 
     while True:
         stddraw.show(50)
@@ -234,6 +241,8 @@ def display_game_over_screen(grid_h, grid_w, current_score):
             if button_blc_x <= mouse_x <= button_blc_x + button_w:
                 if button_blc_y <= mouse_y <= button_blc_y + button_h:
                     return True
+                elif menu_button_y <= mouse_y <= menu_button_y + button_h:
+                    return False
 
 
 def display_game_menu(grid_height, grid_width):
@@ -273,5 +282,7 @@ def display_game_menu(grid_height, grid_width):
 # start() function is specified as the entry point (main function) from which
 # the program starts execution
 if __name__ == '__main__':
+    stddraw.setCanvasSize(Dimensions.CANVAS_WIDTH, Dimensions.CANVAS_HEIGHT)
+
     start()
 # Main function where this program starts execution
