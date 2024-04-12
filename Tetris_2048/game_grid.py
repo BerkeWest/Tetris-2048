@@ -100,9 +100,9 @@ class GameGrid:
         stddraw.setFontSize(20)
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 3, "ESC=Stop")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 4, "A-D=Rotate")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 6, "Left-Right Arrow=Move")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 6, "Left-Right=Move")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 5, "Space=Hard Drop")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 7, "Down Arrow=Soft Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 7, "Down=Soft Drop")
 
         # Exit game button positioning
         button_height = 1
