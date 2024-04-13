@@ -93,6 +93,8 @@ def start():
                 elif key_typed == "space":
                     while current_tetromino.can_be_moved("down", grid):
                         current_tetromino.move("down", grid)
+                elif key_typed == "r":
+                    start()
             stddraw.clearKeysTyped()
 
         if not is_paused:

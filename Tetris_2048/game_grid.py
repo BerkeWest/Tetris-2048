@@ -156,6 +156,9 @@ class GameGrid:
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Space = Hard Drop")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 14.5, "Down = Soft Drop")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 15, "C = Hold")
+        stddraw.setPenColor(Color(0, 0, 0))
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "R = Main Menu")
+
 
         # Exit game button positioning
         button_height = 1
