@@ -18,15 +18,15 @@ class Colors:
 
 class Texts:
     BUTTON_TEXT = "Click Here to Go Settings Screen"
-    GAME_OVER_WIN = "Game Over, Win"
-    GAME_OVER_LOSE = "Game Over, Lose"
+    GAME_OVER_WIN = "Game Over, You Win"
+    GAME_OVER_LOSE = "Game Over, You Lose"
     PLAY_AGAIN = "Play Again"
     START_GAME = "Start!"
     HOW_TO_PLAY = (
         "Use 'A' to rotate the tetromino counter-clockwise and 'D' to rotate it clockwise. "
         "Use the Left and Right Arrow Keys to move the tetromino sideways. Down arrow to soft drop "
         "and the space bar for a hard drop. You lose if a tetromino exits the play area, "
-        "and you win the game if your score reaches 2048. You can also press 'ESC' to stop game. "
+        "and you win the game if a tetromino score reaches 2048. You can also press 'ESC' to stop game. "
     )
 
 
@@ -75,6 +75,8 @@ def start():
     grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
     current_tetromino = create_tetromino()
     grid.current_tetromino = current_tetromino
+    next_tetromino = create_tetromino()
+    grid.next_tetromino = next_tetromino
     is_paused = False
 
     while True:
@@ -87,6 +89,8 @@ def start():
                     current_tetromino.move(key_typed, grid)
                 elif key_typed in ["d", "a"]:
                     current_tetromino.rotate(key_typed)
+                elif key_typed == "c":
+                    hold(grid)
                 elif key_typed == "space":
                     while current_tetromino.can_be_moved("down", grid):
                         current_tetromino.move("down", grid)
@@ -103,8 +107,10 @@ def start():
                         grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
                     else:
                         start()  # returns the start of the loop
-                current_tetromino = create_tetromino()
+                current_tetromino = next_tetromino
+                next_tetromino = create_tetromino()
                 grid.current_tetromino = current_tetromino
+                grid.next_tetromino = next_tetromino
 
         grid.display()
 
@@ -115,6 +121,19 @@ def create_tetromino():
     random_index = random.randint(0, len(tetromino_types) - 1)
     random_type = tetromino_types[random_index]
     return Tetromino(random_type)
+
+def hold(grid):
+    if grid.hold_tetromino == None:
+        grid.hold_tetromino = grid.current_tetromino
+        grid.current_tetromino = grid.next_tetromino
+        grid.next_tetromino = create_tetromino()
+    else:
+        a_tetromino = grid.hold_tetromino
+        hold_tetromino = grid.current_tetromino
+        current_tetromino = a_tetromino
+        grid.hold_tetromino = hold_tetromino
+        grid.current_tetromino = current_tetromino
+
 
 
 def p_to_c(x, in_min, in_max, out_min, out_max):

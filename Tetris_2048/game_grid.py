@@ -20,6 +20,7 @@ class GameGrid:
         # create the tetromino that is currently being moved on the game grid
         self.current_tetromino = None
         self.next_tetromino = None
+        self.hold_tetromino = None
         # the game_over flag shows whether the game is over or not
         self.game_over = False
         # set the color used for the empty grid cells
@@ -86,23 +87,75 @@ class GameGrid:
         stddraw.setPenColor(Color(139, 120, 128))
         stddraw.filledRectangle(self.grid_width - 0.5, -0.5, self.info_width, self.grid_height + 0.5)
         info_center_x_scale = self.grid_width + self.info_width / 2 - 0.5
-        info_score_y_scale = self.grid_height - 2
+        info_score_y_scale = self.grid_height - 1
+        next_tetromino_y_scale = self.grid_height - 2
+        next_tetromino_draw_y_scale = self.grid_height - 3.5
+        hold_tetromino_y_scale = self.grid_height - 7
+
 
         # Draw the score
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
         stddraw.setFontSize(20)
         stddraw.boldText(info_center_x_scale, info_score_y_scale, "Your Score: " + str(self.score))
+        stddraw.boldText(info_center_x_scale, next_tetromino_y_scale, "Next Tetromino: ")
+        
+        block_size = 1
+        block_spacing = 0.07
+
+        tetromino_base_x = info_center_x_scale-0.5
+        tetromino_base_y = next_tetromino_draw_y_scale
+        stddraw.setPenColor(Color(238, 228, 218))
+
+        if self.next_tetromino.type == 'I':
+            for i in range(4):
+                stddraw.filledRectangle(tetromino_base_x, tetromino_base_y - i * (block_size + block_spacing),
+                                        block_size, block_size)
+        elif self.next_tetromino.type == 'O':
+            offsets = [(0, 0), (0, -1), (1, 0), (1, -1)]
+            for dx, dy in offsets:
+                stddraw.filledRectangle(tetromino_base_x + dx * (block_size + block_spacing),
+                                        tetromino_base_y + dy * (block_size + block_spacing), block_size, block_size)
+        elif self.next_tetromino.type == 'S':
+            offsets = [(0, 0), (1, 0), (-1, -1), (0, -1)]
+            for dx, dy in offsets:
+                stddraw.filledRectangle(tetromino_base_x + dx * (block_size + block_spacing),
+                                        tetromino_base_y + dy * (block_size + block_spacing), block_size, block_size)
+        elif self.next_tetromino.type == 'Z':
+            offsets = [(0, 0), (-1, 0), (0, -1), (1, -1)]
+            for dx, dy in offsets:
+                stddraw.filledRectangle(tetromino_base_x + dx * (block_size + block_spacing),
+                                        tetromino_base_y + dy * (block_size + block_spacing), block_size, block_size)
+        elif self.next_tetromino.type == 'L':
+            for i in range(3):
+                stddraw.filledRectangle(tetromino_base_x, tetromino_base_y - i * (block_size + block_spacing),
+                                        block_size, block_size)
+            stddraw.filledRectangle(tetromino_base_x + block_size + block_spacing,
+                                    tetromino_base_y - 2 * (block_size + block_spacing), block_size, block_size)
+        elif self.next_tetromino.type == 'J':
+            for i in range(3):
+                stddraw.filledRectangle(tetromino_base_x, tetromino_base_y - i * (block_size + block_spacing),
+                                        block_size, block_size)
+            stddraw.filledRectangle(tetromino_base_x - (block_size + block_spacing),
+                                    tetromino_base_y - 2 * (block_size + block_spacing), block_size, block_size)
+        elif self.next_tetromino.type == 'T':
+            for dx in [-1, 0, 1]:
+                stddraw.filledRectangle(tetromino_base_x + dx * (block_size + block_spacing),
+                                        tetromino_base_y - (block_size + block_spacing), block_size, block_size)
+            stddraw.filledRectangle(tetromino_base_x, tetromino_base_y, block_size, block_size)
+        
+        stddraw.boldText(info_center_x_scale, hold_tetromino_y_scale, "Hold Tetromino: ")
 
         # Draw the "esc" to stop
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
         stddraw.setFontSize(20)
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 3, "ESC=Stop")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 4, "A-D=Rotate")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 6, "Left-Right=Move")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 5, "Space=Hard Drop")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 7, "Down=Soft Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 12.5, "ESC = Stop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 13, "A-D = Rotate")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 13.5, "Left-Right = Move")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Space = Hard Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 14.5, "Down = Soft Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 15, "C = Hold")
 
         # Exit game button positioning
         button_height = 1
