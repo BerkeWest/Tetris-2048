@@ -93,6 +93,8 @@ def start():
                 elif key_typed == "space":
                     while current_tetromino.can_be_moved("down", grid):
                         current_tetromino.move("down", grid)
+                elif key_typed == "r":
+                    start()
             stddraw.clearKeysTyped()
 
         if not is_paused:
@@ -121,8 +123,9 @@ def create_tetromino():
     random_type = tetromino_types[random_index]
     return Tetromino(random_type)
 
+
 def hold(grid):
-    if grid.hold_tetromino == None:
+    if grid.hold_tetromino is None:
         grid.hold_tetromino = grid.current_tetromino
         grid.current_tetromino = grid.next_tetromino
         grid.next_tetromino = create_tetromino()
@@ -132,7 +135,6 @@ def hold(grid):
         current_tetromino = a_tetromino
         grid.hold_tetromino = hold_tetromino
         grid.current_tetromino = current_tetromino
-
 
 
 def p_to_c(x, in_min, in_max, out_min, out_max):

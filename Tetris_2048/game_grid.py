@@ -45,6 +45,8 @@ class GameGrid:
             self.current_tetromino.draw()
         # draw a box around the game grid
         self.score = Tile.merge_tiles(self.tile_matrix, self.score)
+        self.remove_flying_tiles()
+        self.remove_full_rows_and_shift()
         self.draw_boundaries()
         self.draw_info_panel()
 
@@ -92,18 +94,17 @@ class GameGrid:
         next_tetromino_draw_y_scale = self.grid_height - 3.5
         hold_tetromino_y_scale = self.grid_height - 7
 
-
         # Draw the score
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
         stddraw.setFontSize(20)
         stddraw.boldText(info_center_x_scale, info_score_y_scale, "Your Score: " + str(self.score))
         stddraw.boldText(info_center_x_scale, next_tetromino_y_scale, "Next Tetromino: ")
-        
+
         block_size = 1
         block_spacing = 0.07
 
-        tetromino_base_x = info_center_x_scale-0.5
+        tetromino_base_x = info_center_x_scale - 0.5
         tetromino_base_y = next_tetromino_draw_y_scale
         stddraw.setPenColor(Color(238, 228, 218))
 
@@ -143,7 +144,7 @@ class GameGrid:
                 stddraw.filledRectangle(tetromino_base_x + dx * (block_size + block_spacing),
                                         tetromino_base_y - (block_size + block_spacing), block_size, block_size)
             stddraw.filledRectangle(tetromino_base_x, tetromino_base_y, block_size, block_size)
-        
+
         stddraw.boldText(info_center_x_scale, hold_tetromino_y_scale, "Hold Tetromino: ")
 
         # Draw the "esc" to stop
@@ -156,6 +157,8 @@ class GameGrid:
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Space = Hard Drop")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 14.5, "Down = Soft Drop")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 15, "C = Hold")
+        stddraw.setPenColor(Color(0, 0, 0))
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "R = Main Menu")
 
         # Exit game button positioning
         button_height = 1
@@ -235,3 +238,33 @@ class GameGrid:
                 for shift_row in range(row, self.grid_height - 1):
                     self.tile_matrix[shift_row] = self.tile_matrix[shift_row + 1]
                 self.tile_matrix[self.grid_height - 1] = [None] * self.grid_width
+
+    def get_connected_tiles(self, start_row, start_col):
+        visited = [[False] * self.grid_width for _ in range(self.grid_height)]
+        connected_tiles = []
+        self.dfs(start_row, start_col, visited, connected_tiles)
+        return connected_tiles
+
+    def remove_flying_tiles(self):
+        for row in range(self.grid_height):
+            for col in range(self.grid_width):
+                if self.tile_matrix[row][col] is not None:
+                    connected_tiles = self.get_connected_tiles(row, col)
+                    if not any(r == 0 for r, c in connected_tiles):
+                        self.score += sum(self.tile_matrix[r][c].number for r, c in connected_tiles)
+                        for r, c in connected_tiles:
+                            self.tile_matrix[r][c] = None
+        return self.score
+
+    def dfs(self, row, col, visited, connected_tiles):
+        if row < 0 or row >= self.grid_height or col < 0 or col >= self.grid_width or visited[row][col] or \
+                self.tile_matrix[row][col] is None:
+            return
+
+        visited[row][col] = True
+        connected_tiles.append((row, col))
+
+        self.dfs(row + 1, col, visited, connected_tiles)
+        self.dfs(row - 1, col, visited, connected_tiles)
+        self.dfs(row, col + 1, visited, connected_tiles)
+        self.dfs(row, col - 1, visited, connected_tiles)
