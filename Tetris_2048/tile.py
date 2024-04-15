@@ -56,19 +56,6 @@ class Tile:
                     tile_matrix[row, col] = None
         return score
 
-    @staticmethod
-    def dfs(tile_matrix, row, col, visited):
-        if row < 0 or row >= len(tile_matrix) or col < 0 or col >= len(tile_matrix[0]) or visited[row][col] or \
-                tile_matrix[row][col] is None:
-            return
-
-        visited[row][col] = True
-
-        Tile.dfs(tile_matrix, row + 1, col, visited)
-        Tile.dfs(tile_matrix, row - 1, col, visited)
-        Tile.dfs(tile_matrix, row, col + 1, visited)
-        Tile.dfs(tile_matrix, row, col - 1, visited)
-
     # Method for drawing the tile
     def draw(self, position, length=1):
         # draw the tile as a filled square
