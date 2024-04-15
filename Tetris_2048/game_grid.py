@@ -162,7 +162,6 @@ class GameGrid:
         stddraw.setPenColor(Color(0, 0, 0))
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "R = Main Menu")
 
-
         # Exit game button positioning
         button_height = 1
         button_width = self.info_width - 2
@@ -229,7 +228,6 @@ class GameGrid:
                         return self.game_over
 
         # After locking the tiles, remove the full rows and update the grid
-        self.remove_full_rows_and_shift()
         if self.score >= 2048:
             self.game_over = True
         return self.game_over
