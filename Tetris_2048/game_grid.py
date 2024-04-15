@@ -44,9 +44,7 @@ class GameGrid:
         if self.current_tetromino is not None:
             self.current_tetromino.draw()
         # draw a box around the game grid
-        self.score = Tile.merge_tiles(self.tile_matrix, self.score)
-        self.remove_flying_tiles()
-        self.remove_full_rows_and_shift()
+
         self.draw_boundaries()
         self.draw_info_panel()
 
@@ -227,7 +225,12 @@ class GameGrid:
                         self.game_over = True
                         return self.game_over
 
+        self.score = Tile.merge_tiles(self.tile_matrix, self.score)
+        self.remove_flying_tiles()
+        self.remove_full_rows_and_shift()
+
         # After locking the tiles, remove the full rows and update the grid
+
         if self.score >= 2048:
             self.game_over = True
         return self.game_over
@@ -243,6 +246,7 @@ class GameGrid:
     def get_connected_tiles(self, start_row, start_col):
         visited = [[False] * self.grid_width for _ in range(self.grid_height)]
         connected_tiles = []
+        print(connected_tiles)
         self.dfs(start_row, start_col, visited, connected_tiles)
         return connected_tiles
 
@@ -253,8 +257,10 @@ class GameGrid:
                     connected_tiles = self.get_connected_tiles(row, col)
                     if not any(r == 0 for r, c in connected_tiles):
                         self.score += sum(self.tile_matrix[r][c].number for r, c in connected_tiles)
+                        print(connected_tiles)
                         for r, c in connected_tiles:
                             self.tile_matrix[r][c] = None
+                        print(connected_tiles)
         return self.score
 
     def dfs(self, row, col, visited, connected_tiles):
