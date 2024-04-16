@@ -10,7 +10,7 @@ class Tile:
     # Class attributes shared among all Tile objects
     # ---------------------------------------------------------------------------
     # the value of the boundary thickness (for the boxes around the tiles)
-    boundary_thickness = 0.004
+    boundary_thickness = 0.003
     # font family and size used for displaying the tile number
     font_family, font_size = "Arial", 14
 

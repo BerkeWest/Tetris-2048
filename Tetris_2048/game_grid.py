@@ -29,7 +29,7 @@ class GameGrid:
         self.line_color = Color(0, 0, 0)
         self.boundary_color = Color(0, 0, 0)
         # thickness values used for the grid lines and the boundaries
-        self.line_thickness = 0.001
+        self.line_thickness = 0.003
         self.box_thickness = 3 * self.line_thickness
         self.score = 0
 
@@ -63,8 +63,8 @@ class GameGrid:
         stddraw.setPenColor(self.line_color)
         stddraw.setPenRadius(self.line_thickness)
         # x and y ranges for the game grid
-        start_x, end_x = -0.5, self.grid_width - 0.5
-        start_y, end_y = -0.5, self.grid_height - 0.5
+        start_x, end_x = -0.54, self.grid_width - 0.54
+        start_y, end_y = -0.47, self.grid_height - 0.47
         for x in np.arange(start_x + 1, end_x, 1):  # vertical inner lines
             stddraw.line(x, start_y, x, end_y)
         for y in np.arange(start_y + 1, end_y, 1):  # horizontal inner lines
@@ -224,8 +224,10 @@ class GameGrid:
                     else:
                         self.game_over = True
                         return self.game_over
-
-        self.score = Tile.merge_tiles(self.tile_matrix, self.score)
+        previous_score = -1
+        while previous_score != self.score:
+            previous_score = self.score
+            self.score = Tile.merge_tiles(self.tile_matrix, self.score)
         self.remove_flying_tiles()
         self.remove_full_rows_and_shift()
 
@@ -243,35 +245,29 @@ class GameGrid:
                     self.tile_matrix[shift_row] = self.tile_matrix[shift_row + 1]
                 self.tile_matrix[self.grid_height - 1] = [None] * self.grid_width
 
-    def get_connected_tiles(self, start_row, start_col):
-        visited = [[False] * self.grid_width for _ in range(self.grid_height)]
-        connected_tiles = []
-        print(connected_tiles)
-        self.dfs(start_row, start_col, visited, connected_tiles)
-        return connected_tiles
-
     def remove_flying_tiles(self):
-        for row in range(self.grid_height):
-            for col in range(self.grid_width):
-                if self.tile_matrix[row][col] is not None:
-                    connected_tiles = self.get_connected_tiles(row, col)
-                    if not any(r == 0 for r, c in connected_tiles):
-                        self.score += sum(self.tile_matrix[r][c].number for r, c in connected_tiles)
-                        print(connected_tiles)
-                        for r, c in connected_tiles:
-                            self.tile_matrix[r][c] = None
-                        print(connected_tiles)
-        return self.score
+        visited = [[False] * self.grid_width for _ in range(self.grid_height)]
 
-    def dfs(self, row, col, visited, connected_tiles):
-        if row < 0 or row >= self.grid_height or col < 0 or col >= self.grid_width or visited[row][col] or \
-                self.tile_matrix[row][col] is None:
+        for col in range(self.grid_width):
+            if self.tile_matrix[0][col] is not None and not visited[0][col]:
+                self.dfs(0, col, visited)
+
+        for row in range(1, self.grid_height):
+            for col in range(self.grid_width):
+                if self.tile_matrix[row][col] is not None and not visited[row][col]:
+                    self.score += self.tile_matrix[row][col].number
+                    self.tile_matrix[row][col] = None
+
+    def dfs(self, row, col, visited):
+        if row < 0 or row >= self.grid_height or col < 0 or col >= self.grid_width:
+            return
+
+        if visited[row][col] or self.tile_matrix[row][col] is None:
             return
 
         visited[row][col] = True
-        connected_tiles.append((row, col))
 
-        self.dfs(row + 1, col, visited, connected_tiles)
-        self.dfs(row - 1, col, visited, connected_tiles)
-        self.dfs(row, col + 1, visited, connected_tiles)
-        self.dfs(row, col - 1, visited, connected_tiles)
+        self.dfs(row - 1, col, visited)  # Up
+        self.dfs(row + 1, col, visited)  # Down
+        self.dfs(row, col - 1, visited)  # Left
+        self.dfs(row, col + 1, visited)  # Right
