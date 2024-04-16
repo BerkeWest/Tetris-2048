@@ -17,11 +17,11 @@ class Colors:
 
 
 class Texts:
-    BUTTON_TEXT = "Click Here to Go Settings Screen"
+    BUTTON_TEXT = "Press Here or Space to Go Settings"
     GAME_OVER_WIN = "Game Over, You Win"
     GAME_OVER_LOSE = "Game Over, You Lose"
     PLAY_AGAIN = "Play Again"
-    START_GAME = "Start!"
+    START_GAME = "Press Here or Space to Start!"
     HOW_TO_PLAY = (
         "Use 'A' to rotate the tetromino counter-clockwise and 'D' to rotate it clockwise. "
         "Use the Left and Right Arrow Keys to move the tetromino sideways. Down arrow to soft drop "
@@ -58,6 +58,8 @@ class Dimensions:
     SPEED_MAX_VALUE = 500
     SPEED_MIN_VALUE = 50
     MENU_IMAGE_PATH = "/images/menu_image.png"
+    GAME_OVER_LOSE_PATH = "/images/loseMenu_image.png"
+    GAME_OVER_WIN_PATH = "/images/winMenu_image.png"
 
 
 # Main program function
@@ -219,6 +221,10 @@ def display_settings_screen():
                     Dimensions.CONTINUE_BUTTON_CENTER[
                         1] + Dimensions.CONTINUE_BUTTON_HEIGHT / 2:
                 break
+        if stddraw.hasNextKeyTyped():
+            key_typed = stddraw.nextKeyTyped()
+            if key_typed == "space":
+                break
 
     return gridSizeValues[1], gridSizeValues[0], game_speed
 
@@ -226,17 +232,18 @@ def display_settings_screen():
 def display_game_over_screen(grid_h, grid_w, current_score):
     stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    img_file = current_dir + Dimensions.MENU_IMAGE_PATH
+    game_over_text = Texts.GAME_OVER_WIN if current_score >= 2048 else Texts.GAME_OVER_LOSE
+    img_file = current_dir + Dimensions.GAME_OVER_WIN_PATH if current_score >= 2048 else current_dir + Dimensions.GAME_OVER_LOSE_PATH
     img_center_x, img_center_y = (grid_w - 1) / 2, grid_h - 3
     image_to_display = Picture(img_file)
-    stddraw.picture(image_to_display, img_center_x, img_center_y)
     button_w, button_h = grid_w - 6, 1.5
     button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
     menu_button_y = button_blc_y - 2
     stddraw.setPenColor(Colors.BUTTON)
     stddraw.setFontFamily("Arial")
     stddraw.setFontSize(40)
-    game_over_text = Texts.GAME_OVER_WIN if current_score >= 2048 else Texts.GAME_OVER_LOSE
+
+    stddraw.picture(image_to_display, img_center_x, img_center_y)
     stddraw.boldText(img_center_x, (button_blc_y + img_center_y) / 2, game_over_text)
     stddraw.setFontSize(25)
     stddraw.text(img_center_x, (button_blc_y + img_center_y) / 2 - 1.5, "Score: " + str(current_score))
@@ -297,6 +304,11 @@ def display_game_menu(grid_height, grid_width):
         if stddraw.mousePressed():
             mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
             if button_blc_x <= mouse_x <= button_blc_x + button_w and button_blc_y <= mouse_y <= button_blc_y + button_h:
+                break
+        if stddraw.hasNextKeyTyped():
+            key_typed = stddraw.nextKeyTyped()
+            if key_typed == "space":
+                stddraw.clearKeysTyped()
                 break
 
 
