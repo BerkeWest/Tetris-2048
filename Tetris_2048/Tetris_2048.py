@@ -219,7 +219,7 @@ def display_game_over_screen(grid_h, grid_w, current_score):
     current_dir = os.path.dirname(os.path.realpath(__file__))
     game_over_text = Texts.GAME_OVER_WIN if current_score >= 2048 else Texts.GAME_OVER_LOSE
     img_file = current_dir + Dimensions.GAME_OVER_WIN_PATH if current_score >= 2048 else current_dir + Dimensions.GAME_OVER_LOSE_PATH
-    img_center_x, img_center_y = (grid_w - 1) / 2, grid_h -6
+    img_center_x, img_center_y = (grid_w - 1) / 2, grid_h - 6
     image_to_display = Picture(img_file)
     button_w, button_h = grid_w - 6, 1.4
     button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
@@ -307,6 +307,12 @@ def display_pause_screen(current_score):
     stddraw.setFontSize(40)
     stddraw.text(img_center_x, img_center_y - 4, "Press 'ESC' to Resume Game")
     stddraw.text(img_center_x, img_center_y - 6, "Your Current Score: " + str(current_score))
+    stddraw.setPenColor(Colors.BUTTON)
+    stddraw.filledRectangle(img_center_x - 6, 3, 12, 2)
+    stddraw.setPenColor(Colors.TEXT)
+    stddraw.setFontSize(25)
+    stddraw.text(img_center_x, 4, "Return to Main Menu")
+
     while True:
         stddraw.show(50)
         if stddraw.hasNextKeyTyped():
@@ -314,6 +320,10 @@ def display_pause_screen(current_score):
             if key_typed == "escape":
                 stddraw.clearKeysTyped()
                 break
+        if stddraw.mousePressed():
+            mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
+            if img_center_x - 6 <= mouse_x <= img_center_x + 6 and 3 <= mouse_y <= 5:
+                start()
 
 
 # start() function is specified as the entry point (main function) from which
