@@ -27,9 +27,9 @@ class GameGrid:
         self.empty_cell_color = Color(139, 120, 128)
         # set the colors used for the grid lines and the grid boundaries
         self.line_color = Color(0, 0, 0)
-        self.boundary_color = Color(0, 0, 0)
+        self.boundary_color = Color(150, 150, 150)
         # thickness values used for the grid lines and the boundaries
-        self.line_thickness = 0.003
+        self.line_thickness = 0.005
         self.box_thickness = 3 * self.line_thickness
         self.score = 0
 
@@ -81,6 +81,8 @@ class GameGrid:
         # the coordinates of the bottom left corner of the game grid
         pos_x, pos_y = -0.5, -0.5
         stddraw.rectangle(pos_x, pos_y, self.grid_width, self.grid_height)
+        # set pen radius for info box boundaries
+        stddraw.rectangle(self.grid_width - 0.5, pos_y, self.info_width, self.grid_height)
         stddraw.setPenRadius()  # reset the pen radius to its default value
 
     def draw_info_panel(self):
