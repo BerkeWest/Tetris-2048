@@ -14,7 +14,8 @@ class Tile:
     # font family and size used for displaying the tile number
     font_family, font_size = "Arial", 14
 
-    # Constructor that creates a tile with 2 as the number on it
+    # Constructor that creates a random tile with a number 2 or 4
+    # ---------------------------------------------------------------------------
     def __init__(self):
         self.foreground_color = None
         self.background_color = None
@@ -25,10 +26,13 @@ class Tile:
         self.box_color = Color(132, 122, 113)  # box (boundary) color
         self.update_color()
 
+    # Method for updating the color of the tile based on the number on it
+    # Using the tile_colors dictionary from tile_color.py
     def update_color(self):
         self.background_color = tile_colors[self.number]['background_color']
         self.foreground_color = tile_colors[self.number]['foreground_color']
 
+    # Method for merging two tiles and updating the score
     def merge_and_update(self, tile):
         if self.number == tile.number:
             self.number *= 2
@@ -37,6 +41,10 @@ class Tile:
             return self.number
         return 0
 
+    # Method calculates the adjacent tiles and merges them if they have the same number
+    # If there is an empty space below the tile, it moves the tile down after the merge
+    # And it will move down every tile above it
+    # Function will return the updated score
     @staticmethod
     def merge_tiles(tile_matrix, score):
         for row, col in np.ndindex(tile_matrix.shape):
