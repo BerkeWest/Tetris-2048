@@ -7,7 +7,7 @@ from tetromino import Tetromino  # the class for modeling the tetrominoes
 import random  # used for creating tetrominoes with random types/shapes
 
 
-# Configuration classes
+# Configuration classes for using colors, texts, and dimensions in the game menu and settings screen
 class Colors:
     BACKGROUND = Color(84, 73, 78)
     BUTTON = Color(90, 90, 90)
@@ -65,7 +65,7 @@ class Dimensions:
     GAME_PAUSED_PATH = "/images/pauseMenu_image.png"
 
 
-# Main program function
+# Main program function for starting the game and handling user input
 def start():
     stddraw.setXscale(-0.5, Dimensions.GRID_WIDTH)
     stddraw.setYscale(-0.5, Dimensions.GRID_HEIGHT)
@@ -124,10 +124,13 @@ def create_tetromino():
     return Tetromino(random_type)
 
 
+# Function for converting pixel values to coordinate values on the slider
 def p_to_c(x, in_min, in_max, out_min, out_max):
     return int(round(((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)))
 
 
+# Function for displaying the settings screen for the game. It allows the user to change the grid size and game speed
+# The user can start the game by clicking on the button or pressing the 'space' key
 def display_settings_screen():
     stddraw.setXscale(0, 500)
     stddraw.setYscale(0, 500)
@@ -214,6 +217,7 @@ def display_settings_screen():
     return gridSizeValues[1], gridSizeValues[0], game_speed
 
 
+# Function for displaying the game over screen when the game ends (either win or lose with  a different message and image)
 def display_game_over_screen(grid_h, grid_w, current_score):
     stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -257,6 +261,8 @@ def display_game_over_screen(grid_h, grid_w, current_score):
                     return False
 
 
+# Function for displaying the game menu screen with instructions on how to play the game
+# The user can start the game by clicking on the button or pressing the 'space' key
 def display_game_menu(grid_height, grid_width):
     stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -296,6 +302,9 @@ def display_game_menu(grid_height, grid_width):
                 break
 
 
+# Function for displaying the pause screen when the game is paused by the user pressing the 'ESC' key
+# It displays the current score and a message to resume the game
+# The user can also return to the main menu by clicking on the button
 def display_pause_screen(current_score):
     stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
