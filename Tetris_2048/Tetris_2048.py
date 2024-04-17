@@ -306,7 +306,6 @@ def display_game_menu(grid_height, grid_width):
 # It displays the current score and a message to resume the game
 # The user can also return to the main menu by clicking on the button
 def display_pause_screen(current_score):
-    stddraw.clear(Colors.BACKGROUND)
     current_dir = os.path.dirname(os.path.realpath(__file__))
     img_file = current_dir + Dimensions.GAME_PAUSED_PATH
     img_center_x, img_center_y = (Dimensions.GRID_WIDTH + Dimensions.INFO_WIDTH) / 2, Dimensions.GRID_HEIGHT - 3
