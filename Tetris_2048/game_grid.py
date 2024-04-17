@@ -145,7 +145,6 @@ class GameGrid:
                                         tetromino_base_y - (block_size + block_spacing), block_size, block_size)
             stddraw.filledRectangle(tetromino_base_x, tetromino_base_y, block_size, block_size)
 
-        stddraw.boldText(info_center_x_scale, hold_tetromino_y_scale, "Hold Tetromino: ")
 
         # Draw the "esc" to stop
         stddraw.setPenColor(Color(255, 255, 255))
@@ -156,7 +155,6 @@ class GameGrid:
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 13.5, "Left-Right = Move")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Space = Hard Drop")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 14.5, "Down = Soft Drop")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 15, "C = Hold")
         stddraw.setPenColor(Color(0, 0, 0))
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "R = Main Menu")
         stddraw.setPenColor(Color(0, 0, 0))
