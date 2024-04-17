@@ -17,10 +17,9 @@ class GameGrid:
         self.game_speed = game_speed
         # create a tile matrix to store the tiles landed onto the game grid
         self.tile_matrix = np.full((grid_h, grid_w), None)
-        # create the tetromino that is currently being moved on the game grid
+        # create the tetromino that is currently being moved on the game grid and the next tetromino to be moved
         self.current_tetromino = None
         self.next_tetromino = None
-        self.hold_tetromino = None
         # the game_over flag shows whether the game is over or not
         self.game_over = False
         # set the color used for the empty grid cells
@@ -31,6 +30,7 @@ class GameGrid:
         # thickness values used for the grid lines and the boundaries
         self.line_thickness = 0.005
         self.box_thickness = 1.5 * self.line_thickness
+        # set the score to 0 at the beginning of the game
         self.score = 0
 
     # Method used for displaying the game grid
@@ -85,13 +85,13 @@ class GameGrid:
         stddraw.rectangle(self.grid_width - 0.5, pos_y, self.info_width, self.grid_height)
         stddraw.setPenRadius()  # reset the pen radius to its default value
 
+    # Method for drawing the information panel on the right side of the game grid (score, next tetromino, instructions, user interface key mapping,etc.)
     def draw_info_panel(self):
         stddraw.setPenColor(Color(84, 73, 78))
         stddraw.filledRectangle(self.grid_width - 0.5, -0.5, self.info_width, self.grid_height + 0.5)
         info_center_x_scale = self.grid_width + self.info_width / 2 - 0.5
-        info_score_y_scale = self.grid_height - 1
-        next_tetromino_y_scale = self.grid_height - 2
-        next_tetromino_draw_y_scale = self.grid_height - 3.5
+        info_score_y_scale = self.grid_height - 2
+        next_tetromino_y_scale = self.grid_height - 3.5
 
         # Draw the score
         stddraw.setPenColor(Color(255, 255, 255))
@@ -104,7 +104,7 @@ class GameGrid:
         block_spacing = 0.07
 
         tetromino_base_x = info_center_x_scale - 0.5
-        tetromino_base_y = next_tetromino_draw_y_scale
+        tetromino_base_y = self.grid_height - 6
         stddraw.setPenColor(Color(238, 228, 218))
 
         if self.next_tetromino.type == 'I':
@@ -147,14 +147,14 @@ class GameGrid:
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
         stddraw.setFontSize(20)
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 13, "A-D = Rotate")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 13.5, "Left-Right = Move")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Space = Hard Drop")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 14.5, "Down = Soft Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 11, "A-D = Rotate")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 12, "Left-Right = Move")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 13, "Space = Hard Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Down = Soft Drop")
         stddraw.setPenColor(Color(0, 0, 0))
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "R = Main Menu")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 8.5, "R = Main Menu")
         stddraw.setPenColor(Color(0, 0, 0))
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10.5, "ESC = Stop Menu")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 9.5, "ESC = Stop Menu")
         # Exit game button positioning
         button_height = 1
         button_width = self.info_width - 2
@@ -178,6 +178,7 @@ class GameGrid:
         # Method used for checking whether the grid cell with given row and column
         # indexes is occupied by a tile or empty
 
+    # Method used for checking whether the grid cell with given row and column indexes is occupied by a tile or empty
     def is_occupied(self, row, col):
         # considering newly entered tetrominoes to the game grid that may have
         # tiles with position.y >= grid_height
@@ -198,6 +199,12 @@ class GameGrid:
     # Method that locks the tiles of the landed tetromino on the game grid while
     # checking if the game is over due to having tiles above the topmost grid row.
     # The method returns True when the game is over and False otherwise.
+    # The method also removes the full rows and shifts the tiles down.
+    # The method also merges the tiles with the same number and updates the score.
+    # The method also removes the flying tiles that are not connected to the ground.
+    # The method also checks if the score is greater than or equal to 2048 to end the game.
+    # Method will first merge, then remove flying tiles, then remove full rows and shift
+    # This order is given by the instructor
     def update_grid(self, tiles_to_lock, blc_position):
         # necessary for the display method to stop displaying the tetromino
         self.current_tetromino = None
@@ -227,11 +234,13 @@ class GameGrid:
         self.remove_full_rows_and_shift()
 
         # After locking the tiles, remove the full rows and update the grid
-
+        # The game is over if the score is greater than or equal to 2048
         if self.score >= 2048:
             self.game_over = True
         return self.game_over
 
+    # Method used for removing the full rows and shifting the tiles down
+    # The method also updates the score by adding the numbers on the removed tiles
     def remove_full_rows_and_shift(self):
         for row in range(self.grid_height):
             if None not in self.tile_matrix[row]:
@@ -240,6 +249,11 @@ class GameGrid:
                     self.tile_matrix[shift_row] = self.tile_matrix[shift_row + 1]
                 self.tile_matrix[self.grid_height - 1] = [None] * self.grid_width
 
+    # Method used for removing the flying tiles that are not connected to the ground
+    # The method also updates the score by adding the numbers on the removed tiles
+    # The method uses Depth First Search (DFS) algorithm to find the connected tiles
+    # Method first checks the top row, then iterates over the rest of the rows
+    # Method will first mark every tile as a false
     def remove_flying_tiles(self):
         visited = [[False] * self.grid_width for _ in range(self.grid_height)]
 
@@ -253,6 +267,10 @@ class GameGrid:
                     self.score += self.tile_matrix[row][col].number
                     self.tile_matrix[row][col] = None
 
+    # Method used for Depth First Search (DFS) algorithm to find the connected tiles
+    # The method marks the visited tiles as True and recursively calls the DFS method
+    # for the neighboring tiles
+    # The method uses the visited matrix to keep track of the visited tiles
     def dfs(self, row, col, visited):
         if row < 0 or row >= self.grid_height or col < 0 or col >= self.grid_width:
             return
@@ -262,7 +280,7 @@ class GameGrid:
 
         visited[row][col] = True
 
-        self.dfs(row - 1, col, visited)  # Up
-        self.dfs(row + 1, col, visited)  # Down
-        self.dfs(row, col - 1, visited)  # Left
-        self.dfs(row, col + 1, visited)  # Right
+        self.dfs(row - 1, col, visited)
+        self.dfs(row + 1, col, visited)
+        self.dfs(row, col - 1, visited)
+        self.dfs(row, col + 1, visited)
