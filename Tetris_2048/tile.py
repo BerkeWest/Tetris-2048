@@ -34,12 +34,10 @@ class Tile:
 
     # Method for merging two tiles and updating the score
     def merge_and_update(self, tile):
-        if self.number == tile.number:
-            self.number *= 2
-            tile.number = None
-            self.update_color()
-            return self.number
-        return 0
+        self.number *= 2
+        tile.number = None
+        self.update_color()
+        return self.number
 
     # Method calculates the adjacent tiles and merges them if they have the same number
     # If there is an empty space below the tile, it moves the tile down after the merge
