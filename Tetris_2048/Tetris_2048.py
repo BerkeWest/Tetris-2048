@@ -9,8 +9,8 @@ import random  # used for creating tetrominoes with random types/shapes
 
 # Configuration classes
 class Colors:
-    BACKGROUND = Color(139, 120, 128)
-    BUTTON = Color(0, 0, 0)
+    BACKGROUND = Color(84, 73, 78)
+    BUTTON = Color(90, 90, 90)
     TEXT = Color(255, 255, 255)
     BLACK = Color(0, 0, 0)
     WHITE = Color(255, 255, 255)
@@ -62,6 +62,7 @@ class Dimensions:
     MENU_IMAGE_PATH = "/images/menu_image.png"
     GAME_OVER_LOSE_PATH = "/images/loseMenu_image.png"
     GAME_OVER_WIN_PATH = "/images/winMenu_image.png"
+    GAME_PAUSED_PATH = "/images/pauseMenu_image.png"
 
 
 # Main program function
@@ -80,40 +81,37 @@ def start():
     grid.current_tetromino = current_tetromino
     next_tetromino = create_tetromino()
     grid.next_tetromino = next_tetromino
-    is_paused = False
 
     while True:
         if stddraw.hasNextKeyTyped():
             key_typed = stddraw.nextKeyTyped()
             if key_typed == "escape":
-                is_paused = not is_paused  # Toggle pause state
-            if not is_paused:
-                if key_typed in ["left", "right", "down"]:
-                    current_tetromino.move(key_typed, grid)
-                elif key_typed in ["d", "a"]:
-                    current_tetromino.rotate(key_typed)
-                elif key_typed == "space":
-                    while current_tetromino.can_be_moved("down", grid):
-                        current_tetromino.move("down", grid)
-                elif key_typed == "r":
-                    start()
+                display_pause_screen(grid.score)
+            elif key_typed in ["left", "right", "down"]:
+                current_tetromino.move(key_typed, grid)
+            elif key_typed in ["d", "a"]:
+                current_tetromino.rotate(key_typed)
+            elif key_typed == "space":
+                while current_tetromino.can_be_moved("down", grid):
+                    current_tetromino.move("down", grid)
+            elif key_typed == "r":
+                start()
             stddraw.clearKeysTyped()
 
-        if not is_paused:
-            success = current_tetromino.move("down", grid)
-            if not success:
-                tiles, pos = grid.current_tetromino.get_min_bounded_tile_matrix(True)
-                game_over = grid.update_grid(tiles, pos)
-                if game_over:
-                    is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
-                    if is_restarted:
-                        grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
-                    elif not is_restarted:
-                        start()
-                current_tetromino = next_tetromino
-                next_tetromino = create_tetromino()
-                grid.current_tetromino = current_tetromino
-                grid.next_tetromino = next_tetromino
+        success = current_tetromino.move("down", grid)
+        if not success:
+            tiles, pos = grid.current_tetromino.get_min_bounded_tile_matrix(True)
+            game_over = grid.update_grid(tiles, pos)
+            if game_over:
+                is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
+                if is_restarted:
+                    grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
+                elif not is_restarted:
+                    start()
+            current_tetromino = next_tetromino
+            next_tetromino = create_tetromino()
+            grid.current_tetromino = current_tetromino
+            grid.next_tetromino = next_tetromino
 
         grid.display()
 
@@ -221,7 +219,7 @@ def display_game_over_screen(grid_h, grid_w, current_score):
     current_dir = os.path.dirname(os.path.realpath(__file__))
     game_over_text = Texts.GAME_OVER_WIN if current_score >= 2048 else Texts.GAME_OVER_LOSE
     img_file = current_dir + Dimensions.GAME_OVER_WIN_PATH if current_score >= 2048 else current_dir + Dimensions.GAME_OVER_LOSE_PATH
-    img_center_x, img_center_y = (grid_w - 1) / 2, grid_h - 3
+    img_center_x, img_center_y = (grid_w - 1) / 2, grid_h -6
     image_to_display = Picture(img_file)
     button_w, button_h = grid_w - 6, 1.4
     button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
@@ -294,6 +292,26 @@ def display_game_menu(grid_height, grid_width):
         if stddraw.hasNextKeyTyped():
             key_typed = stddraw.nextKeyTyped()
             if key_typed == "space":
+                stddraw.clearKeysTyped()
+                break
+
+
+def display_pause_screen(current_score):
+    stddraw.clear(Colors.BACKGROUND)
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    img_file = current_dir + Dimensions.GAME_PAUSED_PATH
+    img_center_x, img_center_y = (Dimensions.GRID_WIDTH + Dimensions.INFO_WIDTH) / 2, Dimensions.GRID_HEIGHT - 3
+    image_to_display = Picture(img_file)
+    stddraw.picture(image_to_display, img_center_x, img_center_y)
+    stddraw.setFontFamily("Arial")
+    stddraw.setFontSize(40)
+    stddraw.text(img_center_x, img_center_y - 4, "Press 'ESC' to Resume Game")
+    stddraw.text(img_center_x, img_center_y - 6, "Your Current Score: " + str(current_score))
+    while True:
+        stddraw.show(50)
+        if stddraw.hasNextKeyTyped():
+            key_typed = stddraw.nextKeyTyped()
+            if key_typed == "escape":
                 stddraw.clearKeysTyped()
                 break
 

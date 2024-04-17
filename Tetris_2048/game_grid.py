@@ -24,13 +24,13 @@ class GameGrid:
         # the game_over flag shows whether the game is over or not
         self.game_over = False
         # set the color used for the empty grid cells
-        self.empty_cell_color = Color(139, 120, 128)
+        self.empty_cell_color = Color(84, 73, 78)
         # set the colors used for the grid lines and the grid boundaries
-        self.line_color = Color(0, 0, 0)
-        self.boundary_color = Color(150, 150, 150)
+        self.line_color = Color(50, 50, 50)
+        self.boundary_color = Color(0, 0, 0)
         # thickness values used for the grid lines and the boundaries
         self.line_thickness = 0.005
-        self.box_thickness = 3 * self.line_thickness
+        self.box_thickness = 1.5 * self.line_thickness
         self.score = 0
 
     # Method used for displaying the game grid
@@ -86,13 +86,12 @@ class GameGrid:
         stddraw.setPenRadius()  # reset the pen radius to its default value
 
     def draw_info_panel(self):
-        stddraw.setPenColor(Color(139, 120, 128))
+        stddraw.setPenColor(Color(84, 73, 78))
         stddraw.filledRectangle(self.grid_width - 0.5, -0.5, self.info_width, self.grid_height + 0.5)
         info_center_x_scale = self.grid_width + self.info_width / 2 - 0.5
         info_score_y_scale = self.grid_height - 1
         next_tetromino_y_scale = self.grid_height - 2
         next_tetromino_draw_y_scale = self.grid_height - 3.5
-        hold_tetromino_y_scale = self.grid_height - 7
 
         # Draw the score
         stddraw.setPenColor(Color(255, 255, 255))
@@ -145,12 +144,9 @@ class GameGrid:
                                         tetromino_base_y - (block_size + block_spacing), block_size, block_size)
             stddraw.filledRectangle(tetromino_base_x, tetromino_base_y, block_size, block_size)
 
-
-        # Draw the "esc" to stop
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
         stddraw.setFontSize(20)
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 12.5, "ESC = Stop")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 13, "A-D = Rotate")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 13.5, "Left-Right = Move")
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Space = Hard Drop")
@@ -158,15 +154,14 @@ class GameGrid:
         stddraw.setPenColor(Color(0, 0, 0))
         stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "R = Main Menu")
         stddraw.setPenColor(Color(0, 0, 0))
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "R = Main Menu")
-
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10.5, "ESC = Stop Menu")
         # Exit game button positioning
         button_height = 1
         button_width = self.info_width - 2
         button_top = 0.5  # Distance from bottom of the info panel
         button_center_y = button_top + button_height / 2
 
-        stddraw.setPenColor(self.boundary_color)
+        stddraw.setPenColor(Color(90, 90, 90))
         stddraw.filledRectangle(self.grid_width + 0.5, button_top, button_width, button_height)
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
