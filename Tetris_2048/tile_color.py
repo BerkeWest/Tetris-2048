@@ -1,5 +1,8 @@
 from lib.color import Color
 
+# Dictionary containing the colors for the tiles based on the number on them
+# The dictionary is used in the Tile class in the update_color method
+# The dictionary is used to set the background and foreground colors of the tile
 tile_colors = {
     2: {
         "background_color": Color(238, 228, 218),
