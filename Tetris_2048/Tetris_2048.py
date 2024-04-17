@@ -46,9 +46,11 @@ class Dimensions:
     CONTINUE_BUTTON_HEIGHT = 50
     SLIDER_MIN_X = 130
     SLIDER_MAX_X = 430
+    SLIDER_MIN_XX = 130
+    SLIDER_MAX_XX = 430
     WIDTH_MIN_VALUE = 12
     WIDTH_MAX_VALUE = 24
-    HEIGHT_MIN_VALUE = 12
+    HEIGHT_MIN_VALUE = 18
     HEIGHT_MAX_VALUE = 24
     SLIDER_BAR_Y_WIDTH = 450
     SLIDER_BAR_Y_HEIGHT = 400
@@ -90,8 +92,6 @@ def start():
                     current_tetromino.move(key_typed, grid)
                 elif key_typed in ["d", "a"]:
                     current_tetromino.rotate(key_typed)
-                elif key_typed == "c":
-                    hold(grid)
                 elif key_typed == "space":
                     while current_tetromino.can_be_moved("down", grid):
                         current_tetromino.move("down", grid)
@@ -109,7 +109,7 @@ def start():
                     if is_restarted:
                         grid = GameGrid(grid_h, grid_w, Dimensions.INFO_WIDTH, game_speed)
                     elif not is_restarted:
-                        start()  # returns the start of the loop
+                        start()
                 current_tetromino = next_tetromino
                 next_tetromino = create_tetromino()
                 grid.current_tetromino = current_tetromino
@@ -126,19 +126,6 @@ def create_tetromino():
     return Tetromino(random_type)
 
 
-def hold(grid):
-    if grid.hold_tetromino is None:
-        grid.hold_tetromino = grid.current_tetromino
-        grid.current_tetromino = grid.next_tetromino
-        grid.next_tetromino = create_tetromino()
-    else:
-        a_tetromino = grid.hold_tetromino
-        hold_tetromino = grid.current_tetromino
-        current_tetromino = a_tetromino
-        grid.hold_tetromino = hold_tetromino
-        grid.current_tetromino = current_tetromino
-
-
 def p_to_c(x, in_min, in_max, out_min, out_max):
     return int(round(((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)))
 
@@ -147,7 +134,7 @@ def display_settings_screen():
     stddraw.setXscale(0, 500)
     stddraw.setYscale(0, 500)
     sliderPositions = [Dimensions.SLIDER_X, Dimensions.SLIDER_X, Dimensions.SLIDER_X]
-    gridSizeValues = [18, 18]  # Default grid size values
+    gridSizeValues = [18, 21]  # Default grid size values
     game_speed = 250  # Default speed value
 
     while True:
@@ -205,7 +192,7 @@ def display_settings_screen():
             elif Dimensions.SLIDER_BAR_Y_HEIGHT - Dimensions.SLIDER_RADIUS <= mouse_y <= Dimensions.SLIDER_BAR_Y_HEIGHT + Dimensions.SLIDER_RADIUS:
                 if Dimensions.SLIDER_MIN_X <= mouse_x <= Dimensions.SLIDER_MAX_X:
                     sliderPositions[1] = mouse_x
-                    gridSizeValues[1] = p_to_c(mouse_x, Dimensions.SLIDER_MIN_X, Dimensions.SLIDER_MAX_X,
+                    gridSizeValues[1] = p_to_c(mouse_x, Dimensions.SLIDER_MIN_XX, Dimensions.SLIDER_MAX_XX,
                                                Dimensions.HEIGHT_MIN_VALUE, Dimensions.HEIGHT_MAX_VALUE)
             elif Dimensions.SLIDER_BAR_Y_SPEED - Dimensions.SLIDER_RADIUS <= mouse_y <= Dimensions.SLIDER_BAR_Y_SPEED + Dimensions.SLIDER_RADIUS:
                 if Dimensions.SLIDER_MIN_X <= mouse_x <= Dimensions.SLIDER_MAX_X:
@@ -236,31 +223,30 @@ def display_game_over_screen(grid_h, grid_w, current_score):
     img_file = current_dir + Dimensions.GAME_OVER_WIN_PATH if current_score >= 2048 else current_dir + Dimensions.GAME_OVER_LOSE_PATH
     img_center_x, img_center_y = (grid_w - 1) / 2, grid_h - 3
     image_to_display = Picture(img_file)
-    button_w, button_h = grid_w - 6, 1.5
+    button_w, button_h = grid_w - 6, 1.4
     button_blc_x, button_blc_y = img_center_x - button_w / 2, 1.5
-    menu_button_y = button_blc_y - 2
-    stddraw.setPenColor(Colors.BUTTON)
-    stddraw.setFontFamily("Arial")
-    stddraw.setFontSize(40)
+    menu_button_y = button_blc_y + 2
 
     stddraw.picture(image_to_display, img_center_x, img_center_y)
-    stddraw.boldText(img_center_x, (button_blc_y + img_center_y) / 2, game_over_text)
-    stddraw.setFontSize(25)
-    stddraw.text(img_center_x, (button_blc_y + img_center_y) / 2 - 1.5, "Score: " + str(current_score))
 
-    # play again button
+    stddraw.setFontFamily("Arial")
+    stddraw.setFontSize(40)
+    stddraw.boldText(img_center_x, img_center_y - 4, game_over_text)
+
+    stddraw.setFontSize(25)
+    stddraw.text(img_center_x, img_center_y - 6, "Score: " + str(current_score))
+
     stddraw.setPenColor(Colors.BUTTON)
     stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
     stddraw.setFontFamily("Arial")
     stddraw.setFontSize(25)
     stddraw.setPenColor(Colors.TEXT)
-    stddraw.text(img_center_x, button_blc_y + 0.75, Texts.PLAY_AGAIN)
+    stddraw.text(img_center_x, button_blc_y + 0.7, Texts.PLAY_AGAIN)
 
-    # return to main menu button
     stddraw.setPenColor(Colors.BUTTON)
     stddraw.filledRectangle(button_blc_x, menu_button_y, button_w, button_h)
     stddraw.setPenColor(Colors.TEXT)
-    stddraw.text(img_center_x, menu_button_y + 0.75, "Return to Main Menu")
+    stddraw.text(img_center_x, menu_button_y + 0.7, "Return to Main Menu")
 
     while True:
         stddraw.show(50)
