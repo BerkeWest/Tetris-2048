@@ -12,6 +12,11 @@ class Tetromino:
     grid_height, grid_width = None, None
 
     # Constructor for creating a tetromino with a given type (shape)
+    # The type parameter is used to determine the shape of the tetromino
+    # The occupied_tiles list is used to store the occupied (non-empty) tiles
+    # in the tile matrix based on the type of the tetromino
+    # The tile_matrix is a 2D matrix of numbered tiles based on the shape of the
+    # 7 type of tetrominoes (I, O, Z, S, J, L, T) in their initial orientation
     def __init__(self, type):
         # set the shape of the tetromino based on the given type
         self.type = type
@@ -82,6 +87,8 @@ class Tetromino:
 
     # Method that returns the position of the cell in the tile matrix specified
     # by the given row and column indexes
+    # The rotated parameter is used to determine the position of the cell in the
+    # tile matrix after a 90-degree rotation
     def get_cell_position(self, row, col, rotated=False):
         n = len(self.tile_matrix)
         if rotated:
@@ -138,6 +145,9 @@ class Tetromino:
 
                         # Method for moving the tetromino in a given direction by 1 on the game grid
 
+    # The direction parameter is used to determine the direction of the movement
+    # The game_grid parameter is used to check if the tetromino can be moved in
+    # the given direction or not by using the can_be_moved method defined below
     def move(self, direction, game_grid):
         # check if the tetromino can be moved in the given direction by using the
         # can_be_moved method defined below
@@ -210,6 +220,10 @@ class Tetromino:
                         break  # end the inner for loop
         return True  # tetromino can be moved in the given direction
 
+    # Method for rotating the tetromino in a given direction by 90 degrees
+    # The direction parameter is used to determine the direction of the rotation
+    # The can_rotate method defined below is used to check if the tetromino can
+    # be rotated in the given direction or not
     def rotate(self, direction):
         if not (self.can_rotate(direction)):
             return False
@@ -219,6 +233,10 @@ class Tetromino:
             self.tile_matrix = np.rot90(self.tile_matrix, 1)
         return True
 
+    # Method to check if the tetromino can be rotated in the given direction or not
+    # The dir parameter is used to determine the direction of the rotation
+    # The can_rotate method returns True if the tetromino can be rotated in the
+    # given direction and False otherwise
     def can_rotate(self, dir):
         n = len(self.tile_matrix)
         copy_of_tile_matrix = cp.copy(self.tile_matrix)
