@@ -63,6 +63,7 @@ dimensions = {
     'GAME_OVER_LOSE_PATH': "/images/loseMenu_image.png",
     'GAME_OVER_WIN_PATH': "/images/winMenu_image.png",
     'GAME_PAUSED_PATH': "/images/pauseMenu_image.png",
+    'CONTROLS_IMAGE_PATH': "/images/controls_image.png",
 }
 
 
@@ -155,8 +156,8 @@ def display_settings_screen():
 
         # Show picture
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        img_file = current_dir + dimensions['MENU_IMAGE_PATH']
-        img_center_x, img_center_y = 250, 250
+        img_file = current_dir + dimensions['CONTROLS_IMAGE_PATH']
+        img_center_x, img_center_y = 250, 225
         image_to_display = Picture(img_file)
         stddraw.picture(image_to_display, img_center_x, img_center_y)
 
@@ -182,10 +183,10 @@ def display_settings_screen():
         # Draw continue button
         stddraw.setPenColor(colors['BUTTON'])
         stddraw.filledRectangle(dimensions['CONTINUE_BUTTON_CENTER'][0] - dimensions['CONTINUE_BUTTON_WIDTH'] / 2,
-                                dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT'] / 2,
+                                dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT']-5 / 2,
                                 dimensions['CONTINUE_BUTTON_WIDTH'], dimensions['CONTINUE_BUTTON_HEIGHT'])
         stddraw.setPenColor(colors['TEXT'])
-        stddraw.text(dimensions['CONTINUE_BUTTON_CENTER'][0], dimensions['CONTINUE_BUTTON_CENTER'][1],
+        stddraw.boldText(dimensions['CONTINUE_BUTTON_CENTER'][0], dimensions['CONTINUE_BUTTON_CENTER'][1]-25,
                      texts['START_GAME'])
 
         stddraw.show(10)
@@ -214,8 +215,8 @@ def display_settings_screen():
 
             if dimensions['CONTINUE_BUTTON_CENTER'][0] - dimensions['CONTINUE_BUTTON_WIDTH'] / 2 <= mouse_x <= \
                     dimensions['CONTINUE_BUTTON_CENTER'][0] + dimensions['CONTINUE_BUTTON_WIDTH'] / 2 and \
-                    dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT'] / 2 <= mouse_y <= \
-                    dimensions['CONTINUE_BUTTON_CENTER'][1] + dimensions['CONTINUE_BUTTON_HEIGHT'] / 2:
+                    dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT']-5 / 2 <= mouse_y <= \
+                    dimensions['CONTINUE_BUTTON_CENTER'][1] + dimensions['CONTINUE_BUTTON_HEIGHT']-5 / 2:
                 break
         if stddraw.hasNextKeyTyped():
             key_typed = stddraw.nextKeyTyped()
