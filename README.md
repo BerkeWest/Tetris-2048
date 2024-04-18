@@ -1,4 +1,4 @@
-# Tetris 2048 Game
+ # Tetris 2048 Game
 
 This project combines the classic games Tetris and 2048 into a single game named Tetris 2048. Developed in Python, this game utilizes the StdDraw library to provide a smooth and user-friendly gaming experience. The goal is to deliver an engaging and enjoyable gameplay that appeals to both Tetris and 2048 enthusiasts.
 
@@ -36,7 +36,7 @@ You can find the instructions for playing the game in the menu. You can customiz
 
 ## Screenshots
 
-You can see the screenshoots from the game:
+You can see the screenshots from the game:
 
 ![Game Photos](Tetris_2048/images/inGame.png)
 
