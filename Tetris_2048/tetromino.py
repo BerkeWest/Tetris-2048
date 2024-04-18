@@ -5,8 +5,10 @@ import random  # module for generating random values/permutations
 import numpy as np  # the fundamental Python module for scientific computing
 
 
-# Class used for modeling tetrominoes with 3 out of 7 different types/shapes
-# as (I, O and Z)
+# Class for modeling a tetromino (a 4-cell block used in the game of Tetris)
+# The Tetromino class is used to create and manipulate tetrominoes in the game
+# The class contains methods for moving, rotating, and drawing tetrominoes
+# The class also contains methods for checking if a tetromino can be moved or rotated
 class Tetromino:
     # The dimensions of the game grid
     grid_height, grid_width = None, None
