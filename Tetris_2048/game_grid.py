@@ -230,6 +230,7 @@ class GameGrid:
         while previous_score != self.score:
             previous_score = self.score
             self.score = Tile.merge_tiles(self.tile_matrix, self.score)
+        self.display()
         self.remove_flying_tiles()
         self.remove_full_rows_and_shift()
 
@@ -248,6 +249,7 @@ class GameGrid:
                 for shift_row in range(row, self.grid_height - 1):
                     self.tile_matrix[shift_row] = self.tile_matrix[shift_row + 1]
                 self.tile_matrix[self.grid_height - 1] = [None] * self.grid_width
+                self.display()
 
     # Method used for removing the flying tiles that are not connected to the ground
     # The method also updates the score by adding the numbers on the removed tiles
@@ -266,6 +268,7 @@ class GameGrid:
                 if self.tile_matrix[row][col] is not None and not visited[row][col]:
                     self.score += self.tile_matrix[row][col].number
                     self.tile_matrix[row][col] = None
+                    self.display()
 
     # Method used for Depth First Search (DFS) algorithm to find the connected tiles
     # The method marks the visited tiles as True and recursively calls the DFS method
