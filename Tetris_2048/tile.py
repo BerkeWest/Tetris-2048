@@ -32,17 +32,16 @@ class Tile:
         self.background_color = tile_colors[self.number]['background_color']
         self.foreground_color = tile_colors[self.number]['foreground_color']
 
-    # Method for merging two tiles and updating the score
-    def merge_and_update(self, tile):
+    # Method for updating the number and calling update_color function to update color of the tile
+    def update_color_and_score(self, tile):
         self.number *= 2
         tile.number = None
         self.update_color()
         return self.number
 
-    # Method calculates the adjacent tiles and merges them if they have the same number
-    # If there is an empty space below the tile, it moves the tile down after the merge
-    # And it will move down every tile above it
-    # Function will return the updated score
+    # Method for handling chain merge of tiles in a matrix
+    # Method find upper tile and if it is the same as current tile, call the update_color_and_score method
+    # and update the score. After that, set the upper tile to None and move all tiles above it one row down
     @staticmethod
     def merge_tiles(tile_matrix, score):
         for row, col in np.ndindex(tile_matrix.shape):
@@ -51,15 +50,12 @@ class Tile:
                 if row < tile_matrix.shape[0] - 1 and tile_matrix[row + 1, col] is not None:
                     adjacent_tile = tile_matrix[row + 1, col]
                     if current_tile.number == adjacent_tile.number:
-                        score += current_tile.merge_and_update(adjacent_tile)
+                        score += current_tile.update_color_and_score(adjacent_tile)
                         tile_matrix[row + 1, col] = None
                         for r in range(row + 1, tile_matrix.shape[0]):
                             if tile_matrix[r, col] is not None:
                                 tile_matrix[r - 1, col] = tile_matrix[r, col]
                                 tile_matrix[r, col] = None
-                if row > 0 and tile_matrix[row - 1, col] is None and np.all(tile_matrix[:row, col] is None):
-                    tile_matrix[row - 1, col] = current_tile
-                    tile_matrix[row, col] = None
         return score
 
     # Method for drawing the tile
