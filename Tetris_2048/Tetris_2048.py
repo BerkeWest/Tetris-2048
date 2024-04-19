@@ -183,17 +183,21 @@ def display_settings_screen():
         # Draw continue button
         stddraw.setPenColor(colors['BUTTON'])
         stddraw.filledRectangle(dimensions['CONTINUE_BUTTON_CENTER'][0] - dimensions['CONTINUE_BUTTON_WIDTH'] / 2,
-                                dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT']-5 / 2,
+                                dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT'] - 5 / 2,
                                 dimensions['CONTINUE_BUTTON_WIDTH'], dimensions['CONTINUE_BUTTON_HEIGHT'])
         stddraw.setPenColor(colors['TEXT'])
-        stddraw.boldText(dimensions['CONTINUE_BUTTON_CENTER'][0], dimensions['CONTINUE_BUTTON_CENTER'][1]-25,
-                     texts['START_GAME'])
+        stddraw.boldText(dimensions['CONTINUE_BUTTON_CENTER'][0], dimensions['CONTINUE_BUTTON_CENTER'][1] - 25,
+                         texts['START_GAME'])
 
         stddraw.show(10)
 
         if stddraw.mousePressed():
             mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
             # Check which slider is being interacted with
+            # Take the mouse input and update the slider position and value
+            # First one is for width, take the mouse_x, update the slider position and for the real width value
+            # call to p_to_c function and update the gridSizeValues[0] with the returned value
+            # Same for the height and speed sliders as well
             if dimensions['SLIDER_BAR_Y_WIDTH'] - dimensions['SLIDER_RADIUS'] <= mouse_y <= dimensions[
                 'SLIDER_BAR_Y_WIDTH'] + dimensions['SLIDER_RADIUS']:
                 if dimensions['SLIDER_MIN_X'] <= mouse_x <= dimensions['SLIDER_MAX_X']:
@@ -215,8 +219,8 @@ def display_settings_screen():
 
             if dimensions['CONTINUE_BUTTON_CENTER'][0] - dimensions['CONTINUE_BUTTON_WIDTH'] / 2 <= mouse_x <= \
                     dimensions['CONTINUE_BUTTON_CENTER'][0] + dimensions['CONTINUE_BUTTON_WIDTH'] / 2 and \
-                    dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT']-5 / 2 <= mouse_y <= \
-                    dimensions['CONTINUE_BUTTON_CENTER'][1] + dimensions['CONTINUE_BUTTON_HEIGHT']-5 / 2:
+                    dimensions['CONTINUE_BUTTON_CENTER'][1] - dimensions['CONTINUE_BUTTON_HEIGHT'] - 5 / 2 <= mouse_y <= \
+                    dimensions['CONTINUE_BUTTON_CENTER'][1] + dimensions['CONTINUE_BUTTON_HEIGHT'] - 5 / 2:
                 break
         if stddraw.hasNextKeyTyped():
             key_typed = stddraw.nextKeyTyped()
