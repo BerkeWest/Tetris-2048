@@ -151,14 +151,14 @@ class GameGrid:
         stddraw.setPenColor(Color(255, 255, 255))
         stddraw.setFontFamily("Arial")
         stddraw.setFontSize(20)
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 13, "A-D = Rotate")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 14, "Left-Right = Move")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 15, "Space = Hard Drop")
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 16, "Down = Soft Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 11.5, "A-D = Rotate")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 12.5, "Left-Right = Move")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 13.5, "Space = Hard Drop")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 14.5, "Down = Soft Drop")
         stddraw.setPenColor(Color(0, 0, 0))
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10.5, "R = Main Menu")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 9, "R = Main Menu")
         stddraw.setPenColor(Color(0, 0, 0))
-        stddraw.boldText(info_center_x_scale, info_score_y_scale - 11.5, "ESC = Stop Menu")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 10, "ESC = Stop Menu")
         # Exit game button positioning
         button_height = 1
         button_width = self.info_width - 2
