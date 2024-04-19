@@ -69,9 +69,11 @@ dimensions = {
 
 # Main program function for starting the game and handling user input
 def start():
+    file_path = os.path.join(os.path.dirname(__file__), "best_score.txt")
+    max_score = read_max_score_from_file(file_path)
     stddraw.setXscale(-0.5, dimensions['GRID_WIDTH'])
     stddraw.setYscale(-0.5, dimensions['GRID_HEIGHT'])
-    display_game_menu(dimensions['GRID_WIDTH'], dimensions['GRID_HEIGHT'])
+    display_game_menu(dimensions['GRID_WIDTH'], dimensions['GRID_HEIGHT'], max_score)
     grid_h, grid_w, game_speed = display_settings_screen()
     game_w = grid_w + dimensions['INFO_WIDTH']
     stddraw.setXscale(-0.5, game_w - 0.5)
@@ -83,6 +85,7 @@ def start():
     grid.current_tetromino = current_tetromino
     next_tetromino = create_tetromino()
     grid.next_tetromino = next_tetromino
+    grid.max_score = max_score
 
     while True:
         if stddraw.hasNextKeyTyped():
@@ -105,6 +108,9 @@ def start():
             tiles, pos = grid.current_tetromino.get_min_bounded_tile_matrix(True)
             game_over = grid.update_grid(tiles, pos)
             if game_over:
+                if grid.score > max_score:
+                    max_score = grid.score
+                    write_max_score_to_file(max_score, file_path)
                 is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
                 if is_restarted:
                     grid = GameGrid(grid_h, grid_w, dimensions['INFO_WIDTH'], game_speed)
@@ -277,7 +283,8 @@ def display_game_over_screen(grid_h, grid_w, current_score):
 
 # Function for displaying the game menu screen with instructions on how to play the game
 # The user can start the game by clicking on the button or pressing the 'space' key
-def display_game_menu(grid_height, grid_width):
+def display_game_menu(grid_height, grid_width, max_score):
+
     stddraw.clear(colors['BACKGROUND'])
     current_dir = os.path.dirname(os.path.realpath(__file__))
     img_file = current_dir + dimensions['MENU_IMAGE_PATH']
@@ -293,6 +300,7 @@ def display_game_menu(grid_height, grid_width):
     stddraw.setFontSize(25)
     stddraw.setPenColor(colors['TEXT'])
     stddraw.text(img_center_x, button_blc_y + 1, texts['BUTTON_TEXT'])
+    stddraw.text(img_center_x, button_blc_y-1, "Best Score: " + str(max_score))
 
     instructions = texts['HOW_TO_PLAY'].split(". ")
     instructions_y_position = 9
@@ -347,6 +355,22 @@ def display_pause_screen(current_score):
             mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
             if img_center_x - 6 <= mouse_x <= img_center_x + 6 and 3 <= mouse_y <= 5:
                 start()
+
+
+def read_max_score_from_file(file_path):
+    try:
+        with open(file_path, "r") as file:
+            max_score = int(file.read().strip())
+            return max_score
+    except FileNotFoundError:
+        return 0
+    except ValueError:
+        return 0
+
+
+def write_max_score_to_file(max_score, file_path):
+    with open(file_path, "w") as file:
+        file.write(str(max_score))
 
 
 # start() function is specified as the entry point (main function) from which
