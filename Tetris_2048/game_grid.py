@@ -32,10 +32,12 @@ class GameGrid:
         self.box_thickness = 1.5 * self.line_thickness
         # set the score to 0 at the beginning of the game
         self.score = 0
+        self.max_score = None
 
     # Method used for displaying the game grid
     def display(self):
         # clear the background to empty_cell_color
+
         stddraw.clear(self.empty_cell_color)
         # draw the game grid
         self.draw_grid()
@@ -90,8 +92,8 @@ class GameGrid:
         stddraw.setPenColor(Color(84, 73, 78))
         stddraw.filledRectangle(self.grid_width - 0.5, -0.5, self.info_width, self.grid_height + 0.5)
         info_center_x_scale = self.grid_width + self.info_width / 2 - 0.5
-        info_score_y_scale = self.grid_height - 2
-        next_tetromino_y_scale = self.grid_height - 3.5
+        info_score_y_scale = self.grid_height - 1
+        next_tetromino_y_scale = self.grid_height - 4
 
         # Draw the score
         stddraw.setPenColor(Color(255, 255, 255))
@@ -99,6 +101,8 @@ class GameGrid:
         stddraw.setFontSize(20)
         stddraw.boldText(info_center_x_scale, info_score_y_scale, "Your Score: " + str(self.score))
         stddraw.boldText(info_center_x_scale, next_tetromino_y_scale, "Next Tetromino: ")
+        stddraw.boldText(info_center_x_scale, info_score_y_scale - 1.5, "Best Score: " + str(self.max_score))
+
 
         block_size = 1
         block_spacing = 0.07
