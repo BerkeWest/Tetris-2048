@@ -242,16 +242,17 @@ class Tetromino:
     def can_rotate(self, dir):
         n = len(self.tile_matrix)
         copy_of_tile_matrix = cp.copy(self.tile_matrix)
-        copy_of_tile_matrix = np.rot90(copy_of_tile_matrix, 1)
 
         for row in range(n):
             for col in range(n):
                 if dir == "d" and copy_of_tile_matrix[row][col] is not None:
+                    copy_of_tile_matrix = np.rot90(copy_of_tile_matrix, 3)
                     position = self.get_cell_position(row, col)
                     if position.y < 0 or position.x < 0 or position.x >= self.grid_width:
                         return False
 
                 elif dir == "a" and copy_of_tile_matrix[row][col] is not None:
+                    copy_of_tile_matrix = np.rot90(copy_of_tile_matrix, 1)
                     position = self.get_cell_position(row, col)
                     if position.y < 0 or position.x < 0 or position.x >= self.grid_width:
                         return False
