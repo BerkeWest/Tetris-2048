@@ -284,7 +284,6 @@ def display_game_over_screen(grid_h, grid_w, current_score):
 # Function for displaying the game menu screen with instructions on how to play the game
 # The user can start the game by clicking on the button or pressing the 'space' key
 def display_game_menu(grid_height, grid_width, max_score):
-
     stddraw.clear(colors['BACKGROUND'])
     current_dir = os.path.dirname(os.path.realpath(__file__))
     img_file = current_dir + dimensions['MENU_IMAGE_PATH']
@@ -300,7 +299,7 @@ def display_game_menu(grid_height, grid_width, max_score):
     stddraw.setFontSize(25)
     stddraw.setPenColor(colors['TEXT'])
     stddraw.text(img_center_x, button_blc_y + 1, texts['BUTTON_TEXT'])
-    stddraw.text(img_center_x, button_blc_y-1, "Best Score: " + str(max_score))
+    stddraw.text(img_center_x, button_blc_y - 1, "Best Score: " + str(max_score))
 
     instructions = texts['HOW_TO_PLAY'].split(". ")
     instructions_y_position = 9
@@ -357,6 +356,7 @@ def display_pause_screen(current_score):
                 start()
 
 
+# function to read the maximum score from the file
 def read_max_score_from_file(file_path):
     try:
         with open(file_path, "r") as file:
@@ -368,6 +368,7 @@ def read_max_score_from_file(file_path):
         return 0
 
 
+# function to write the maximum score to the file
 def write_max_score_to_file(max_score, file_path):
     with open(file_path, "w") as file:
         file.write(str(max_score))
