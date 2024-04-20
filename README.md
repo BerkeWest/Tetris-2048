@@ -52,6 +52,9 @@ and 2048 rules have been combined! You can pause, restart, and resume the game a
 
 ![Game Photos](UML.png)
 
+## Package Diagram of the Game
+![Game Photos](PACKAGES.png)
+
 ## Screenshots
 
 You can see the screenshots from the game:
