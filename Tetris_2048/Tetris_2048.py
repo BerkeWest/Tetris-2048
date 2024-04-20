@@ -114,6 +114,7 @@ def start():
                 is_restarted = display_game_over_screen(grid_h, game_w, grid.score)
                 if is_restarted:
                     grid = GameGrid(grid_h, grid_w, dimensions['INFO_WIDTH'], game_speed)
+                    grid.max_score = max_score
                 elif not is_restarted:
                     start()
             current_tetromino = next_tetromino
