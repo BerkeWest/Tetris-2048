@@ -133,7 +133,7 @@ def create_tetromino():
     return Tetromino(random_type)
 
 
-# Function for converting pixel values to coordinate values on the slider
+# Function for converting x values to real values on the slider
 def p_to_c(x, in_min, in_max, out_min, out_max):
     return int(round(((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)))
 
