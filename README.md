@@ -48,12 +48,13 @@ You can find the instructions for playing the game in the menu. You can customiz
 to your preference. Throughout the game, you can control and rotate the tetrominoes using the specified keys. All Tetris
 and 2048 rules have been combined! You can pause, restart, and resume the game at any time. Have fun!
 
+## Package Diagram of the Game
+
+![Game Photos](PACKAGES.png)
+
 ## UML Diagram of the Game
 
 ![Game Photos](UML.png)
-
-## Package Diagram of the Game
-![Game Photos](PACKAGES.png)
 
 ## Screenshots
 
